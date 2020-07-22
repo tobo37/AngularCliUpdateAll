@@ -34,4 +34,38 @@ def updateDependenciesFast():
     os.system(cmd)
     gitAddCommit(lines)
 
-def updateDevDepend
+def updateDevDependencies():
+    for line in d['devDependencies']:
+        packageName = line.split(':')[0]
+        cmd = 'ng update ' + packageName
+        print('next update: ' + packageName)
+        os.system(cmd)
+        gitAddCommit('update: '+packageName)
+
+def updateDevDependenciesFast():
+    print('next update DevDependencies fast')
+    lines = ''
+    for line in d['devDependencies']:
+        lines.join(line.split(':')[0], ' ')
+    cmd = 'ng update ' + lines
+    os.system(cmd)
+    gitAddCommit(lines)
+
+def npmAuditFix():
+    print('run npm fix audit')
+    cmd = 'npm audit fix'
+    os.system(cmd)
+    gitAddCommit('npm audit fix')
+
+def updateAll():
+    updateAngular()
+    try:
+      updateDependenciesFast()
+    except:
+      updateDependencies()
+    try:
+      updateDevDependenciesFast()
+    except:
+      updateDevDependencies()
+    npmAuditFix()
+updateAll()
