@@ -4,53 +4,53 @@ import json
 import os
 import sys
 
-def gitAddCommit(packageName):
+def git_add_commit(package_name):
     cmdAdd = 'git add .'
     os.system(cmdAdd)
-    cmdCommit = 'git commit -m "' + packageName + '"'
+    cmdCommit = 'git commit -m "' + package_name + '"'
     os.system(cmdCommit)
 
 
-def updateAngular():
+def update_angular():
     cmd = 'ng update @angular/cli @angular/core'
     os.system(cmd)
-    gitAddCommit('@angular/cli @angular/core')
+    git_add_commit('@angular/cli @angular/core')
 
-def runNgUpdate(packageName):
-    cmd = 'ng update ' + packageName
+def run_ng_update(package_name):
+    cmd = 'ng update ' + package_name
     os.system(cmd)
-    gitAddCommit('update: '+packageName)
+    git_add_commit('update: '+package_name)
 
-def updateSlow(depFromPackageJson):
-    for line in depFromPackageJson:
+def update_slow(dep_from_package_json):
+    for line in dep_from_package_json:
         packageName = line.split(':')[0]
-        runNgUpdate(packageName)
+        run_ng_update(packageName)
 
-def updateFast(depFromPackageJson):
-    packageNameLine = seperator.join(depFromPackageJson)
-    runNgUpdate(packageNameLine)
+def update_fast(dep_from_package_json):
+    package_name_line = seperator.join(dep_from_package_json)
+    run_ng_update(package_name_line)
 
-def npmAuditFix():
+def npm_audit_fix():
     print('run npm fix audit')
     cmd = 'npm audit fix'
     os.system(cmd)
-    gitAddCommit('npm audit fix')
+    git_add_commit('npm audit fix')
 
 
-def updateAll():
-    updateAngular()
-    updateGroup(dependencies)
-    updateGroup(devDependencies)
-    npmAuditFix()
+def update_all():
+    update_angular()
+    update_group(dependencies)
+    update_group(dev_dependencies)
+    npm_audit_fix()
 
 
-def updateGroup(depFromPackageJson):
+def update_group(dep_from_package_json):
     try:
         print("try")
-        updateFast(depFromPackageJson)
+        update_fast(dep_from_package_json)
     except:
         print("fallback")
-        updateSlow(depFromPackageJson)
+        update_slow(dep_from_package_json)
 
 
 def load_package_json(path=''):
@@ -74,11 +74,11 @@ def handle_input(argv):
     for arg in argv:
         arg = arg.lower()
         if(arg == 'dep' or arg == 'save' or arg == 'dependencies'):
-            updateGroup(dependencies)
+            update_group(dependencies)
         elif(arg == 'all' or arg == 'updateall'):
-            updateAll()
+            update_all()
         elif(arg == 'dev' or arg == 'save-dev' or arg == 'devdependencies'):
-            updateGroup(devDependencies)
+            update_group(dev_dependencies)
         else:
             help_output()
 
@@ -89,11 +89,11 @@ def main():
     global seperator
     global packageJson
     global dependencies
-    global devDependencies
+    global dev_dependencies
     seperator = " "
     packageJson = load_package_json()
     dependencies = packageJson['dependencies']
-    devDependencies = packageJson['devDependencies']
+    dev_dependencies = packageJson['devDependencies']
 
     handle_input(sys.argv[1:])
 
