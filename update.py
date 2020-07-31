@@ -61,7 +61,8 @@ def load_package_json(path=''):
 
 def help_output():
     print("update all: all | updataall")
-    print("update Dependencies: dep | dependencies")
+    print("update Dependencies: dep | save | dependencies")
+    print("update devDependencies: dev | save-dev | devDependencies")
 
 
 def handle_input(argv):
@@ -70,17 +71,14 @@ def handle_input(argv):
         return
     for arg in argv:
         arg = arg.lower()
-        switch(arg) {
-            case 'dep' or 'dependencies': 
-                updateGroup(dependencies)
-                break
-            case 'all' or 'updateall':
-                updateAll()
-        }
-        print(arg)
-        if(arg == 'dep' or arg == 'dependencies'):
+        if(arg == 'dep' or arg == 'save' or arg == 'dependencies'):
             updateGroup(dependencies)
-        if(arg)
+        elif(arg == 'all' or arg == 'updateall'):
+            updateAll()
+        elif(arg == 'dev' or arg == 'save-dev' or arg == 'devdependencies'):
+            updateGroup(devDependencies)
+        else:
+            help_output()
 
 ### main ####
 
