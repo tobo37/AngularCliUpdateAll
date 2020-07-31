@@ -5,10 +5,10 @@ import os
 import sys
 
 def git_add_commit(package_name):
-    cmdAdd = 'git add .'
-    os.system(cmdAdd)
-    cmdCommit = 'git commit -m "' + package_name + '"'
-    os.system(cmdCommit)
+    cmd_add = 'git add .'
+    os.system(cmd_add)
+    cmd_commit = 'git commit -m "' + package_name + '"'
+    os.system(cmd_commit)
 
 
 def update_angular():
@@ -23,8 +23,8 @@ def run_ng_update(package_name):
 
 def update_slow(dep_from_package_json):
     for line in dep_from_package_json:
-        packageName = line.split(':')[0]
-        run_ng_update(packageName)
+        package_name = line.split(':')[0]
+        run_ng_update(package_name)
 
 def update_fast(dep_from_package_json):
     package_name_line = seperator.join(dep_from_package_json)
@@ -55,8 +55,8 @@ def update_group(dep_from_package_json):
 
 def load_package_json(path=''):
     with open('package.json') as f:
-        packageJson = json.load(f)
-    return packageJson
+        package_json = json.load(f)
+    return package_json
 
 #### input handling ###
 
@@ -87,13 +87,12 @@ def handle_input(argv):
 
 def main():
     global seperator
-    global packageJson
     global dependencies
     global dev_dependencies
     seperator = " "
-    packageJson = load_package_json()
-    dependencies = packageJson['dependencies']
-    dev_dependencies = packageJson['devDependencies']
+    package_json = load_package_json()
+    dependencies = package_json['dependencies']
+    dev_dependencies = package_json['devDependencies']
 
     handle_input(sys.argv[1:])
 
