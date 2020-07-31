@@ -1,55 +1,32 @@
 import json
 import os
-
-with open('package.json') as f:
-    d = json.load(f)
+import sys
 
 def gitAddCommit(packageName):
-    print('git add / commit: ' + packageName)
     cmdAdd = 'git add .'
     os.system(cmdAdd)
     cmdCommit = 'git commit -m "' + packageName + '"'
     os.system(cmdCommit)
 
+
 def updateAngular():
-    print('next update @angular/cli @angular/core')
     cmd = 'ng update @angular/cli @angular/core'
     os.system(cmd)
     gitAddCommit('@angular/cli @angular/core')
 
-def updateDependencies():
-    for line in d['dependencies']:
-        packageName = line.split(':')[0]
-        cmd = 'ng update ' + packageName
-        print('next update: ' + packageName)
-        os.system(cmd)
-        gitAddCommit('update: '+packageName)
-
-def updateDependenciesFast():
-    print('next update Dependencies fast')
-    lines = ''
-    for line in d['dependencies']:
-        lines.join(line.split(':')[0], ' ')
-    cmd = 'ng update ' + lines
+def runNgUpdate(packageName):
+    cmd = 'ng update ' + packageName
     os.system(cmd)
-    gitAddCommit(lines)
+    gitAddCommit('update: '+packageName)
 
-def updateDevDependencies():
-    for line in d['devDependencies']:
+def updateSlow(depFromPackageJson):
+    for line in depFromPackageJson:
         packageName = line.split(':')[0]
-        cmd = 'ng update ' + packageName
-        print('next update: ' + packageName)
-        os.system(cmd)
-        gitAddCommit('update: '+packageName)
+        runNgUpdate(packageName)
 
-def updateDevDependenciesFast():
-    print('next update DevDependencies fast')
-    lines = ''
-    for line in d['devDependencies']:
-        lines.join(line.split(':')[0], ' ')
-    cmd = 'ng update ' + lines
-    os.system(cmd)
-    gitAddCommit(lines)
+def updateFast(depFromPackageJson):
+    packageNameLine = seperator.join(depFromPackageJson)
+    runNgUpdate(packageNameLine)
 
 def npmAuditFix():
     print('run npm fix audit')
@@ -57,15 +34,69 @@ def npmAuditFix():
     os.system(cmd)
     gitAddCommit('npm audit fix')
 
+
 def updateAll():
     updateAngular()
-    try:
-      updateDependenciesFast()
-    except:
-      updateDependencies()
-    try:
-      updateDevDependenciesFast()
-    except:
-      updateDevDependencies()
+    updateGroup(dependencies)
+    updateGroup(devDependencies)
     npmAuditFix()
-updateAll()
+
+
+def updateGroup(depFromPackageJson):
+    try:
+        print("try")
+        updateFast(depFromPackageJson)
+    except:
+        print("fallback")
+        updateSlow(depFromPackageJson)
+
+
+def load_package_json(path=''):
+    with open('package.json') as f:
+        packageJson = json.load(f)
+    return packageJson
+
+#### input handling ###
+
+
+def help_output():
+    print("update all: all | updataall")
+    print("update Dependencies: dep | dependencies")
+
+
+def handle_input(argv):
+    if(len(argv) == 0):
+        help_output()
+        return
+    for arg in argv:
+        arg = arg.lower()
+        switch(arg) {
+            case 'dep' or 'dependencies': 
+                updateGroup(dependencies)
+                break
+            case 'all' or 'updateall':
+                updateAll()
+        }
+        print(arg)
+        if(arg == 'dep' or arg == 'dependencies'):
+            updateGroup(dependencies)
+        if(arg)
+
+### main ####
+
+
+def main():
+    global seperator
+    global packageJson
+    global dependencies
+    global devDependencies
+    seperator = " "
+    packageJson = load_package_json()
+    dependencies = packageJson['dependencies']
+    devDependencies = packageJson['devDependencies']
+
+    handle_input(sys.argv[1:])
+
+
+if __name__ == "__main__":
+    main()
