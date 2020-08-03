@@ -1,0 +1,46 @@
+{
+  "name": "update-them-all",
+  "version": "1.0.2",
+  "description": "Angular & Package Updater",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "test": "jest --config jestconfig.json",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tobo37/AngularCliUpdateAll.git"
+  },
+  "keywords": [
+    "Angular",
+    "npm",
+    "updater",
+    "update all",
+    "package.json"
+  ],
+  "author": "Gerrit",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tobo37/AngularCliUpdateAll"
+  },
+  "homepage": "https://github.com/tobo37/AngularCliUpdateAll#readme",
+  "devDependencies": {
+    "codecov": "^3.1.0",
+    "prettier": "^1.13.2",
+    "ts-jest": "^22.4.6",
+    "tslint": "^5.10.0",
+    "tslint-config-prettier": "^1.13.0",
+    "typescript": "^2.8.3"
+  },
+  "files": [
+    "lib/**/*"
+  ]
+}

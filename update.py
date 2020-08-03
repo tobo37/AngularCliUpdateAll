@@ -73,11 +73,18 @@ def handle_input(argv):
         return
     for arg in argv:
         arg = arg.lower()
+        global dependencies
+        global dev_dependencies
+        package_json = load_package_json()
+        
         if(arg == 'dep' or arg == 'save' or arg == 'dependencies'):
             update_group(dependencies)
         elif(arg == 'all' or arg == 'updateall'):
+            dependencies = package_json['dependencies']
+            dev_dependencies = package_json['devDependencies']
             update_all()
         elif(arg == 'dev' or arg == 'save-dev' or arg == 'devdependencies'):
+            dev_dependencies = package_json['devDependencies']
             update_group(dev_dependencies)
         else:
             help_output()
@@ -87,13 +94,7 @@ def handle_input(argv):
 
 def main():
     global seperator
-    global dependencies
-    global dev_dependencies
     seperator = " "
-    package_json = load_package_json()
-    dependencies = package_json['dependencies']
-    dev_dependencies = package_json['devDependencies']
-
     handle_input(sys.argv[1:])
 
 
