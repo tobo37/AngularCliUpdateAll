@@ -1,13 +1,12 @@
-const { exec } = require('child_process');
-
+import { exec } from 'child_process';
+import * as request from "request-promise-native";
 export class AngularUdpater {
   dependencies: string[] = [];
   devDependencies: string[] = [];
-  packageJson = this.load_package_json();
-  constructor() {}
+  packageJson = this.loadPackageJson();
 
   runCommend(commend: string) {
-    const runGitAdd = exec(commend, function (error: any, stdout: string, stderr: string) {
+    const runGitAdd = exec(commend, (error: any, stdout: string, stderr: string) => {
       if (error) {
         console.log(error.stack);
         console.log('Error code: ' + error.code);
@@ -79,7 +78,12 @@ export class AngularUdpater {
     }
   }
 
-  load_package_json(path = './') {
+  async loadPackageJson(path = './') {
+    const options = {
+        uri: path + 'package.json'
+    };
+
+    const result = await request.get(options);
     // return require(path + 'package.json');
     const json = require(path + 'package.json');
     json.forEach((element: string) => {
