@@ -1,13 +1,12 @@
-const { exec } = require('child_process');
-
+import { exec } from 'child_process';
+import * as request from "request-promise-native";
 export class AngularUdpater {
   dependencies: string[] = [];
   devDependencies: string[] = [];
-  packageJson = this.load_package_json();
-  constructor() {}
+  packageJson = this.loadPackageJson();
 
   runCommend(commend: string) {
-    const runGitAdd = exec(commend, function (error: any, stdout: string, stderr: string) {
+    const runGitAdd = exec(commend, (error: any, stdout: string, stderr: string) => {
       if (error) {
         console.log(error.stack);
         console.log('Error code: ' + error.code);
@@ -28,58 +27,63 @@ export class AngularUdpater {
     this.runCommend(cmdCommend);
   }
 
-  update_angular() {
+  updateAngular() {
     const cmd = 'ng update @angular/cli @angular/core';
     this.runCommend(cmd);
     this.gitAddCommit('@angular/cli @angular/core');
   }
 
-  run_ng_update(packageName: string) {
+  runNgUpdate(packageName: string) {
     const cmd = 'ng update ' + packageName;
     this.runCommend(cmd);
     this.gitAddCommit('update: ' + packageName);
   }
 
-  update_slow(dep_from_package_json: string[]) {
-    dep_from_package_json.forEach((item) => {
-        this.run_ng_update(item.split(':')[0]);
+  updateSlow(depFromPackageJson: string[]) {
+    depFromPackageJson.forEach((item) => {
+        this.runNgUpdate(item.split(':')[0]);
     });
   }
 
-  update_fast(dep_from_package_json: string[]) {
+  updateFast(depFromPackageJson: string[]) {
     const packageNameList: string[] = [];
-    dep_from_package_json.forEach((item) => {
+    depFromPackageJson.forEach((item) => {
       packageNameList.push(item.split(':')[0]);
     });
     const packageNameLine = packageNameList.join(' ');
-    this.run_ng_update(packageNameLine);
+    this.runNgUpdate(packageNameLine);
   }
 
-  npm_audit_fix() {
+  npmAuditFix() {
     console.log('run npm fix audit');
     const cmd = 'npm audit fix';
     this.runCommend(cmd);
     this.gitAddCommit('npm audit fix');
   }
 
-  update_all() {
-    this.update_angular();
-    this.update_group(this.dependencies);
-    this.update_group(this.devDependencies);
-    this.npm_audit_fix();
+  updateAll() {
+    this.updateAngular();
+    this.updateGroup(this.dependencies);
+    this.updateGroup(this.devDependencies);
+    this.npmAuditFix();
   }
 
-  update_group(dep_from_package_json: string[]) {
+  updateGroup(depFromPackageJson: string[]) {
     try {
       console.log('try');
-      this.update_fast(dep_from_package_json);
+      this.updateFast(depFromPackageJson);
     } catch (error) {
       console.log('fallback');
-      this.update_slow(dep_from_package_json);
+      this.updateSlow(depFromPackageJson);
     }
   }
 
-  load_package_json(path = '') {
+  async loadPackageJson(path = './') {
+    const options = {
+        uri: path + 'package.json'
+    };
+
+    const result = await request.get(options);
     // return require(path + 'package.json');
     const json = require(path + 'package.json');
     json.forEach((element: string) => {
@@ -106,14 +110,14 @@ export class AngularUdpater {
 //         arg = arg.lower()
 
 //         if(arg == 'dep' or arg == 'save' or arg == 'dependencies'):
-//             update_group(dependencies)
+//             updateGroup(dependencies)
 //         elif(arg == 'all' or arg == 'updateall'):
 //             dependencies = package_json['dependencies']
 //             dev_dependencies = package_json['devDependencies']
-//             update_all()
+//             updateAll()
 //         elif(arg == 'dev' or arg == 'save-dev' or arg == 'devdependencies'):
 //             dev_dependencies = package_json['devDependencies']
-//             update_group(dev_dependencies)
+//             updateGroup(dev_dependencies)
 //         else:
 //             help_output()
 
