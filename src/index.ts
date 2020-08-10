@@ -79,12 +79,13 @@ export class AngularUdpater {
     }
   }
 
-  load_package_json(path = '') {
-    // return require(path + 'package.json');
-    const json = require(path + 'package.json');
-    json.forEach((element: string) => {
-      console.log(element);
-    });
+  load_package_json(path = './') {
+    console.log('Path: '+ path);
+    return require(path + 'package.json');
+    // const json = require('package.json');
+    // console.log(json['devDependencies']);
+    // const dev = json['devDependencies']
+    // console.log(devParsed);
   }
 }
 
