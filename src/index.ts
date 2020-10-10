@@ -1,11 +1,42 @@
 import { exec } from 'child_process';
-import * as request from "request-promise-native";
+import Listr from 'listr';
+import { updateOptions } from './cli';
+import * as fs from 'fs';
+
 export class AngularUdpater {
   dependencies: string[] = [];
   devDependencies: string[] = [];
-  packageJson = this.loadPackageJson();
+  tasks = new Listr();
+  options: updateOptions;
 
-  runCommend(commend: string) {
+  constructor(options: updateOptions){
+    this.options = options;
+  }
+
+  async init(){
+    await this.loadPackageJson();
+  }
+
+  addOptions(options: updateOptions){
+    this.options = options;
+  }
+
+  async exec(){
+    this.prepareTasks();
+    if(this.dependencies.length === 0 && this.devDependencies.length === 0){
+      await this.loadPackageJson();
+    }
+    await this.tasks.run();
+  }
+
+  private prepareTasks(){
+    this.tasks.add({title: "update Angular", task: () => this.updateAngular(), enabled: () => this.options.all});
+    this.tasks.add({title: "update bla", task: () => this.updateGroup(this.dependencies), enabled: () => this.options.all || this.options.dependencies});
+    this.tasks.add({title: "update dev", task: () => this.updateGroup(this.devDependencies), enabled: () => this.options.all || this.options.devDependencies});
+    this.tasks.add({title: "npm fix packages", task: () => this.npmAuditFix(), enabled: () => !this.options.skipFix});
+  }
+
+  private runCommend(commend: string) {
     const runGitAdd = exec(commend, (error: any, stdout: string, stderr: string) => {
       if (error) {
         console.log(error.stack);
@@ -20,32 +51,32 @@ export class AngularUdpater {
     });
   }
 
-  gitAddCommit(packageName: string) {
+  private gitAddCommit(packageName: string) {
     const gitAddCommend = 'git add .';
     this.runCommend(gitAddCommend);
     const cmdCommend = 'git commit -m "' + packageName + '"';
     this.runCommend(cmdCommend);
   }
 
-  updateAngular() {
+  private updateAngular() {
     const cmd = 'ng update @angular/cli @angular/core';
     this.runCommend(cmd);
     this.gitAddCommit('@angular/cli @angular/core');
   }
 
-  runNgUpdate(packageName: string) {
+  private runNgUpdate(packageName: string) {
     const cmd = 'ng update ' + packageName;
     this.runCommend(cmd);
     this.gitAddCommit('update: ' + packageName);
   }
 
-  updateSlow(depFromPackageJson: string[]) {
+  private updateSlow(depFromPackageJson: string[]) {
     depFromPackageJson.forEach((item) => {
         this.runNgUpdate(item.split(':')[0]);
     });
   }
 
-  updateFast(depFromPackageJson: string[]) {
+  private updateFast(depFromPackageJson: string[]) {
     const packageNameList: string[] = [];
     depFromPackageJson.forEach((item) => {
       packageNameList.push(item.split(':')[0]);
@@ -54,21 +85,21 @@ export class AngularUdpater {
     this.runNgUpdate(packageNameLine);
   }
 
-  npmAuditFix() {
+  private npmAuditFix() {
     console.log('run npm fix audit');
     const cmd = 'npm audit fix';
     this.runCommend(cmd);
     this.gitAddCommit('npm audit fix');
   }
 
-  updateAll() {
+  private updateAll() {
     this.updateAngular();
     this.updateGroup(this.dependencies);
     this.updateGroup(this.devDependencies);
     this.npmAuditFix();
   }
 
-  updateGroup(depFromPackageJson: string[]) {
+  private updateGroup(depFromPackageJson: string[]) {
     try {
       console.log('try');
       this.updateFast(depFromPackageJson);
@@ -78,55 +109,61 @@ export class AngularUdpater {
     }
   }
 
-  async loadPackageJson(path = './') {
-    const options = {
-        uri: path + 'package.json'
-    };
+  // async findpath(call: number = 0){
+  //   let path = '';
+  //   for(let i= 0; i < call; i++){
+  //     path += '../'
+  //   }
+  //   if(call === 0){
+  //     path = './'
+  //   }
+  //   path = path + 'package.json'
+  //   try {
+  //     // awaitrequire(path);
+  //     var pjson = await require(path);
+  //   } catch (error) {
+  //     console.log("error", call);
+  //     if(call < 15){
+  //       await this.findpath(call+1);
+  //     }
+  //     else {
+  //       console.log("geht nicht");
+  //     }
+  //   }
+  //   return path;
+  // }
 
-    const result = await request.get(options);
-    // return require(path + 'package.json');
-    const json = require(path + 'package.json');
-    json.forEach((element: string) => {
-      console.log(element);
+  loadPackageJson(path?: string) {
+
+    // path = this.findpath();
+    
+    // const options = {
+    //     uri: path + 'package.json'
+    // };
+    console.log("lol ich starte dann mal");
+    // const packageJson = require(path);
+
+    const json = JSON.parse(fs.readFileSync('package.json', 'utf8'))
+    console.log(json);
+    this.dependencies = [];
+    this.devDependencies = [];
+    Object.keys(json.dependencies).forEach((element: string)=> {
+      this.dependencies.push(element);
+    });
+    Object.keys(json.devDependencies).forEach((element: string)=> {
+      this.devDependencies.push(element);
     });
   }
+
+//   private getKeysFromJson(json: JSON){
+//     // JSONObject jsonObject = new JSONObject(contents.trim());
+//     Iterator<String> keys = json.stringify
+
+//     while(keys.hasNext()) {
+//     String key = keys.next();
+//     if (jsonObject.get(key) instanceof JSONObject) {
+//           // do something with jsonObject here      
+//     }
+// }
+//   }
 }
-
-// #### input handling ###
-
-// function help_output(){
-//     console.log("update all: all | updataall")
-//     console.log("update Dependencies: dep | save | dependencies")
-//     console.log("update devDependencies: dev | save-dev | devDependencies")
-// }
-
-// function handle_input(argv){
-
-// }
-//     if(len(argv) == 0):
-//         help_output()
-//         return
-//     for arg in argv:
-//         arg = arg.lower()
-
-//         if(arg == 'dep' or arg == 'save' or arg == 'dependencies'):
-//             updateGroup(dependencies)
-//         elif(arg == 'all' or arg == 'updateall'):
-//             dependencies = package_json['dependencies']
-//             dev_dependencies = package_json['devDependencies']
-//             updateAll()
-//         elif(arg == 'dev' or arg == 'save-dev' or arg == 'devdependencies'):
-//             dev_dependencies = package_json['devDependencies']
-//             updateGroup(dev_dependencies)
-//         else:
-//             help_output()
-
-// ### main ####
-
-// function main():
-//     global seperator
-//     seperator = " "
-//     handle_input(sys.argv[1:])
-
-// if __name__ == "__main__":
-//     main()
