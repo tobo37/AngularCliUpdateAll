@@ -108,41 +108,8 @@ export class AngularUdpater {
       this.updateSlow(depFromPackageJson);
     }
   }
-
-  // async findpath(call: number = 0){
-  //   let path = '';
-  //   for(let i= 0; i < call; i++){
-  //     path += '../'
-  //   }
-  //   if(call === 0){
-  //     path = './'
-  //   }
-  //   path = path + 'package.json'
-  //   try {
-  //     // awaitrequire(path);
-  //     var pjson = await require(path);
-  //   } catch (error) {
-  //     console.log("error", call);
-  //     if(call < 15){
-  //       await this.findpath(call+1);
-  //     }
-  //     else {
-  //       console.log("geht nicht");
-  //     }
-  //   }
-  //   return path;
-  // }
-
+  
   loadPackageJson(path?: string) {
-
-    // path = this.findpath();
-    
-    // const options = {
-    //     uri: path + 'package.json'
-    // };
-    console.log("lol ich starte dann mal");
-    // const packageJson = require(path);
-
     const json = JSON.parse(fs.readFileSync('package.json', 'utf8'))
     console.log(json);
     this.dependencies = [];
@@ -154,16 +121,4 @@ export class AngularUdpater {
       this.devDependencies.push(element);
     });
   }
-
-//   private getKeysFromJson(json: JSON){
-//     // JSONObject jsonObject = new JSONObject(contents.trim());
-//     Iterator<String> keys = json.stringify
-
-//     while(keys.hasNext()) {
-//     String key = keys.next();
-//     if (jsonObject.get(key) instanceof JSONObject) {
-//           // do something with jsonObject here      
-//     }
-// }
-//   }
 }
