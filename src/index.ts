@@ -13,24 +13,24 @@ export class AngularUdpater {
     this.options = options;
   }
 
-  async init(){
-    await this.loadPackageJson();
+  init(){
+    this.loadPackageJson();
   }
 
   addOptions(options: UpdateOptions){
     this.options = options;
   }
 
-  async exec(){
+  exec(){
     this.prepareTasks();
     if(this.dependencies.length === 0 && this.devDependencies.length === 0){
-      await this.loadPackageJson();
+      this.loadPackageJson();
     }
-    await this.tasks.run();
+    this.tasks.run();
   }
 
   private prepareTasks(){
-    this.tasks.add({title: "update Angular", task: async () => await this.updateAngular(), enabled: () => this.options.all});
+    this.tasks.add({title: "update Angular", task: async () => this.updateAngular(), enabled: () => this.options.all});
     this.tasks.add({title: "update bla", task: () => this.updateGroup(this.dependencies), enabled: () => this.options.all || this.options.dependencies});
     this.tasks.add({title: "update dev", task: () => this.updateGroup(this.devDependencies), enabled: () => this.options.all || this.options.devDependencies});
     this.tasks.add({title: "npm fix packages", task: () => this.npmAuditFix(), enabled: () => !this.options.skipFix});
