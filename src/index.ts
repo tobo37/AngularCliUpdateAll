@@ -66,17 +66,13 @@ export class AngularUdpater {
   }
 
   private updateSlow(depFromPackageJson: string[]) {
-    depFromPackageJson.forEach((item) => {
-        this.runNgUpdate(item.split(':')[0]);
+    depFromPackageJson.forEach(item => {
+        this.runNgUpdate(item);
     });
   }
 
   private updateFast(depFromPackageJson: string[]) {
-    const packageNameList: string[] = [];
-    depFromPackageJson.forEach((item) => {
-      packageNameList.push(item.split(':')[0]);
-    });
-    const packageNameLine = packageNameList.join(' ');
+    const packageNameLine = depFromPackageJson.join(' ');
     this.runNgUpdate(packageNameLine);
   }
 
