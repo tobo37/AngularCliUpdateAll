@@ -52,7 +52,7 @@ async function promptForMissingOptions(options: UpdateOptions) {
     });
 
     const answers: 'dependencies' | 'devDependencies' | 'all'  = (await inquirer.prompt(questions)).value;
-    console.log(chalk.green("choosed: " +answers));
+    console.log(answers);
     options[answers] = true;
     return options;
 }
