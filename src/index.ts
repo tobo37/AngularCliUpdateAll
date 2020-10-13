@@ -98,6 +98,5 @@ export class AngularUdpater {
     Object.keys(json.devDependencies).forEach((element: string)=> {
       this.devDependencies.push(element);
     });
-    console.log(this.dependencies);
   }
 }
