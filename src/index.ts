@@ -13,8 +13,8 @@ export class AngularUdpater {
     this.options = options;
   }
 
-  async init(){
-    await this.loadPackageJson();
+  init(){
+    this.loadPackageJson();
   }
 
   addOptions(options: UpdateOptions){
@@ -24,7 +24,7 @@ export class AngularUdpater {
   async exec(){
     this.prepareTasks();
     if(this.dependencies.length === 0 && this.devDependencies.length === 0){
-      await this.loadPackageJson();
+      this.loadPackageJson();
     }
     await this.tasks.run();
   }
