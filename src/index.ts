@@ -1,4 +1,4 @@
-import { exec } from 'child_process';
+import { exec, execSync } from 'child_process';
 import Listr from 'listr';
 import { updateOptions } from './cli';
 import * as fs from 'fs';
@@ -30,25 +30,14 @@ export class AngularUdpater {
   }
 
   private prepareTasks(){
-    this.tasks.add({title: "update Angular", task: () => this.updateAngular(), enabled: () => this.options.all});
+    this.tasks.add({title: "update Angular", task: async () => await this.updateAngular(), enabled: () => this.options.all});
     this.tasks.add({title: "update bla", task: () => this.updateGroup(this.dependencies), enabled: () => this.options.all || this.options.dependencies});
     this.tasks.add({title: "update dev", task: () => this.updateGroup(this.devDependencies), enabled: () => this.options.all || this.options.devDependencies});
     this.tasks.add({title: "npm fix packages", task: () => this.npmAuditFix(), enabled: () => !this.options.skipFix});
   }
 
   private runCommend(commend: string) {
-    const runGitAdd = exec(commend, (error: any, stdout: string, stderr: string) => {
-      if (error) {
-        console.log(error.stack);
-        console.log('Error code: ' + error.code);
-        console.log('Signal received: ' + error.signal);
-      }
-      console.log('Child Process STDOUT: ' + stdout);
-      console.log('Child Process STDERR: ' + stderr);
-    });
-    runGitAdd.on('exit', () => {
-      console.log('added to commit');
-    });
+    const runGitAdd = execSync(commend);
   }
 
   private gitAddCommit(packageName: string) {
@@ -109,7 +98,7 @@ export class AngularUdpater {
     }
   }
   
-  loadPackageJson(path?: string) {
+  loadPackageJson() {
     const json = JSON.parse(fs.readFileSync('package.json', 'utf8'))
     console.log(json);
     this.dependencies = [];
