@@ -1,5 +1,4 @@
 import arg from 'arg';
-import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { AngularUdpater } from '.';
 
@@ -38,7 +37,6 @@ function parseArgumentsIntoOptions(rawArgs: string[]): UpdateOptions {
 
 async function promptForMissingOptions(options: UpdateOptions) {
     if (options.all || options.dependencies || options.devDependencies) {
-        console.log(chalk.green("input looks fine"));
         return options;
     }
 
@@ -52,19 +50,12 @@ async function promptForMissingOptions(options: UpdateOptions) {
     });
 
     const answers: {updateType: 'dependencies' | 'devDependencies' | 'all'}  = await inquirer.prompt(questions);
-    console.log(answers.updateType);
     options[answers.updateType] = true;
     return options;
 }
 
 
 export async function cli(args: any[]) {
-    // const options: UpdateOptions = {dependencies: false,
-    // devDependencies: false,
-    // skipFix: false,
-    // all: true,
-    // remaining: ''};
-    // console.log('%s Invalid template name', chalk.red.bold('ERROR'));
     let options = parseArgumentsIntoOptions(args);
     options = await promptForMissingOptions(options);
     const angularUpdater = new AngularUdpater(options);

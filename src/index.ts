@@ -2,6 +2,7 @@ import { execSync } from 'child_process';
 import Listr from 'listr';
 import { UpdateOptions } from './cli';
 import * as fs from 'fs';
+import chalk from 'chalk';
 
 export class AngularUdpater {
   dependencies: string[] = [];
@@ -38,9 +39,11 @@ export class AngularUdpater {
 
   private runCommend(commend: string) {
     try {
+      console.log("run next: " + commend);
       execSync(commend);
       return true;
     } catch (error) {
+      console.log(chalk.yellow(error));
       return false;
     }
     
