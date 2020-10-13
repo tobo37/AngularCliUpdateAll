@@ -1,51 +1,77 @@
-import { exec } from 'child_process';
-import * as request from "request-promise-native";
+import { execSync } from 'child_process';
+import Listr from 'listr';
+import { UpdateOptions } from './cli';
+import * as fs from 'fs';
+
 export class AngularUdpater {
   dependencies: string[] = [];
   devDependencies: string[] = [];
-  packageJson = this.loadPackageJson();
+  tasks = new Listr();
+  options: UpdateOptions;
 
-  runCommend(commend: string) {
-    const runGitAdd = exec(commend, (error: any, stdout: string, stderr: string) => {
-      if (error) {
-        console.log(error.stack);
-        console.log('Error code: ' + error.code);
-        console.log('Signal received: ' + error.signal);
-      }
-      console.log('Child Process STDOUT: ' + stdout);
-      console.log('Child Process STDERR: ' + stderr);
-    });
-    runGitAdd.on('exit', () => {
-      console.log('added to commit');
-    });
+  constructor(options: UpdateOptions){
+    this.options = options;
   }
 
-  gitAddCommit(packageName: string) {
+  async init(){
+    await this.loadPackageJson();
+  }
+
+  addOptions(options: UpdateOptions){
+    this.options = options;
+  }
+
+  async exec(){
+    this.prepareTasks();
+    if(this.dependencies.length === 0 && this.devDependencies.length === 0){
+      await this.loadPackageJson();
+    }
+    await this.tasks.run();
+  }
+
+  private prepareTasks(){
+    this.tasks.add({title: "update Angular", task: async () => await this.updateAngular(), enabled: () => this.options.all});
+    this.tasks.add({title: "update bla", task: () => this.updateGroup(this.dependencies), enabled: () => this.options.all || this.options.dependencies});
+    this.tasks.add({title: "update dev", task: () => this.updateGroup(this.devDependencies), enabled: () => this.options.all || this.options.devDependencies});
+    this.tasks.add({title: "npm fix packages", task: () => this.npmAuditFix(), enabled: () => !this.options.skipFix});
+  }
+
+  private runCommend(commend: string) {
+    try {
+      execSync(commend);
+      return true;
+    } catch (error) {
+      return false;
+    }
+    
+  }
+
+  private gitAddCommit(packageName: string) {
     const gitAddCommend = 'git add .';
     this.runCommend(gitAddCommend);
     const cmdCommend = 'git commit -m "' + packageName + '"';
     this.runCommend(cmdCommend);
   }
 
-  updateAngular() {
+  private updateAngular() {
     const cmd = 'ng update @angular/cli @angular/core';
     this.runCommend(cmd);
     this.gitAddCommit('@angular/cli @angular/core');
   }
 
-  runNgUpdate(packageName: string) {
+  private runNgUpdate(packageName: string) {
     const cmd = 'ng update ' + packageName;
     this.runCommend(cmd);
     this.gitAddCommit('update: ' + packageName);
   }
 
-  updateSlow(depFromPackageJson: string[]) {
+  private updateSlow(depFromPackageJson: string[]) {
     depFromPackageJson.forEach((item) => {
         this.runNgUpdate(item.split(':')[0]);
     });
   }
 
-  updateFast(depFromPackageJson: string[]) {
+  private updateFast(depFromPackageJson: string[]) {
     const packageNameList: string[] = [];
     depFromPackageJson.forEach((item) => {
       packageNameList.push(item.split(':')[0]);
@@ -54,79 +80,36 @@ export class AngularUdpater {
     this.runNgUpdate(packageNameLine);
   }
 
-  npmAuditFix() {
-    console.log('run npm fix audit');
+  private npmAuditFix() {
     const cmd = 'npm audit fix';
     this.runCommend(cmd);
     this.gitAddCommit('npm audit fix');
   }
 
-  updateAll() {
+  private updateAll() {
     this.updateAngular();
     this.updateGroup(this.dependencies);
     this.updateGroup(this.devDependencies);
     this.npmAuditFix();
   }
 
-  updateGroup(depFromPackageJson: string[]) {
+  private updateGroup(depFromPackageJson: string[]) {
     try {
-      console.log('try');
       this.updateFast(depFromPackageJson);
     } catch (error) {
-      console.log('fallback');
       this.updateSlow(depFromPackageJson);
     }
   }
-
-  async loadPackageJson(path = './') {
-    const options = {
-        uri: path + 'package.json'
-    };
-
-    const result = await request.get(options);
-    // return require(path + 'package.json');
-    const json = require(path + 'package.json');
-    json.forEach((element: string) => {
-      console.log(element);
+  
+  loadPackageJson() {
+    const json = JSON.parse(fs.readFileSync('package.json', 'utf8'))
+    this.dependencies = [];
+    this.devDependencies = [];
+    Object.keys(json.dependencies).forEach((element: string)=> {
+      this.dependencies.push(element);
+    });
+    Object.keys(json.devDependencies).forEach((element: string)=> {
+      this.devDependencies.push(element);
     });
   }
 }
-
-// #### input handling ###
-
-// function help_output(){
-//     console.log("update all: all | updataall")
-//     console.log("update Dependencies: dep | save | dependencies")
-//     console.log("update devDependencies: dev | save-dev | devDependencies")
-// }
-
-// function handle_input(argv){
-
-// }
-//     if(len(argv) == 0):
-//         help_output()
-//         return
-//     for arg in argv:
-//         arg = arg.lower()
-
-//         if(arg == 'dep' or arg == 'save' or arg == 'dependencies'):
-//             updateGroup(dependencies)
-//         elif(arg == 'all' or arg == 'updateall'):
-//             dependencies = package_json['dependencies']
-//             dev_dependencies = package_json['devDependencies']
-//             updateAll()
-//         elif(arg == 'dev' or arg == 'save-dev' or arg == 'devdependencies'):
-//             dev_dependencies = package_json['devDependencies']
-//             updateGroup(dev_dependencies)
-//         else:
-//             help_output()
-
-// ### main ####
-
-// function main():
-//     global seperator
-//     seperator = " "
-//     handle_input(sys.argv[1:])
-
-// if __name__ == "__main__":
-//     main()
