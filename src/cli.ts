@@ -45,15 +45,15 @@ async function promptForMissingOptions(options: UpdateOptions) {
     const questions = [];
     questions.push({
         type: 'list',
-        name: 'template',
+        name: 'updateType',
         message: 'What you want to update?',
         choices: ['dependencies', 'devDependencies', 'all'],
         default: 'all',
     });
 
-    const answers: 'dependencies' | 'devDependencies' | 'all'  = await inquirer.prompt(questions);
-    console.log(answers);
-    options[answers] = true;
+    const answers: {updateType: 'dependencies' | 'devDependencies' | 'all'}  = await inquirer.prompt(questions);
+    console.log(answers.updateType);
+    options[answers.updateType] = true;
     return options;
 }
 
