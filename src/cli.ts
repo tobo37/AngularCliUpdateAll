@@ -1,4 +1,5 @@
 import arg from 'arg';
+import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { AngularUdpater } from '.';
 
@@ -37,6 +38,7 @@ function parseArgumentsIntoOptions(rawArgs: string[]): UpdateOptions {
 
 async function promptForMissingOptions(options: UpdateOptions) {
     if (options.all || options.dependencies || options.devDependencies) {
+        console.log(chalk.green("input looks fine"));
         return options;
     }
 
@@ -50,6 +52,7 @@ async function promptForMissingOptions(options: UpdateOptions) {
     });
 
     const answers: 'dependencies' | 'devDependencies' | 'all'  = await inquirer.prompt(questions);
+    console.log(chalk.green("choosed: " +answers));
     options[answers] = true;
     return options;
 }
