@@ -30,20 +30,14 @@ export class AngularUdpater {
   }
 
   private prepareTasks(){
-    this.tasks.add({title: "update Angular", task: async () => this.updateAngular(), enabled: () => this.options.all});
-    this.tasks.add({title: "update dependencies", task: () => this.updateGroup(this.dependencies), enabled: () => this.options.all || this.options.dependencies});
-    this.tasks.add({title: "update devDependencies", task: () => this.updateGroup(this.devDependencies), enabled: () => this.options.all || this.options.devDependencies});
-    this.tasks.add({title: "npm fix packages", task: () => this.npmAuditFix(), enabled: () => !this.options.skipFix});
+    this.tasks.add({title: "update Angular", task: async () => this.updateAngular(), skip: () => !this.options.all});
+    this.tasks.add({title: "update dependencies", task: () => this.updateGroup(this.dependencies), skip: () => !this.options.all && !this.options.dependencies});
+    this.tasks.add({title: "update devDependencies", task: () => this.updateGroup(this.devDependencies), skip: () => !this.options.all && !this.options.devDependencies});
+    this.tasks.add({title: "npm fix packages", task: () => this.npmAuditFix(), skip: () => this.options.skipFix});
   }
 
   private runCommend(commend: string) {
-    try {
-      execSync(commend);
-      return true;
-    } catch (error) {
-      return false;
-    }
-    
+    execSync(commend);
   }
 
   private gitAddCommit(packageName: string) {
@@ -61,8 +55,14 @@ export class AngularUdpater {
 
   private runNgUpdate(packageName: string) {
     const cmd = 'ng update ' + packageName;
-    this.runCommend(cmd);
-    this.gitAddCommit('update: ' + packageName);
+    try {
+      this.runCommend(cmd);
+      this.gitAddCommit('update: ' + packageName);
+      return true;
+    } catch (error) {
+      return false;
+    }
+    
   }
 
   private updateSlow(depFromPackageJson: string[]) {
@@ -73,7 +73,7 @@ export class AngularUdpater {
 
   private updateFast(depFromPackageJson: string[]) {
     const packageNameLine = depFromPackageJson.join(' ');
-    this.runNgUpdate(packageNameLine);
+    return this.runNgUpdate(packageNameLine);
   }
 
   private npmAuditFix() {
@@ -82,17 +82,8 @@ export class AngularUdpater {
     this.gitAddCommit('npm audit fix');
   }
 
-  private updateAll() {
-    this.updateAngular();
-    this.updateGroup(this.dependencies);
-    this.updateGroup(this.devDependencies);
-    this.npmAuditFix();
-  }
-
   private updateGroup(depFromPackageJson: string[]) {
-    try {
-      this.updateFast(depFromPackageJson);
-    } catch (error) {
+    if(!this.updateFast(depFromPackageJson)){
       this.updateSlow(depFromPackageJson);
     }
   }
