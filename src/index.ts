@@ -2,7 +2,6 @@ import { execSync } from 'child_process';
 import Listr from 'listr';
 import { UpdateOptions } from './cli';
 import * as fs from 'fs';
-import chalk from 'chalk';
 
 export class AngularUdpater {
   dependencies: string[] = [];
@@ -31,7 +30,7 @@ export class AngularUdpater {
   }
 
   private prepareTasks(){
-    this.tasks.add({title: "update Angular", task: async () => await this.updateAngular(), enabled: () => this.options.all});
+    this.tasks.add({title: "update Angular", task: async () => this.updateAngular(), enabled: () => this.options.all});
     this.tasks.add({title: "update dependencies", task: () => this.updateGroup(this.dependencies), enabled: () => this.options.all || this.options.dependencies});
     this.tasks.add({title: "update devDependencies", task: () => this.updateGroup(this.devDependencies), enabled: () => this.options.all || this.options.devDependencies});
     this.tasks.add({title: "npm fix packages", task: () => this.npmAuditFix(), enabled: () => !this.options.skipFix});
