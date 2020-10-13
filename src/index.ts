@@ -1,15 +1,15 @@
-import { exec, execSync } from 'child_process';
+import { execSync } from 'child_process';
 import Listr from 'listr';
-import { updateOptions } from './cli';
+import { UpdateOptions } from './cli';
 import * as fs from 'fs';
 
 export class AngularUdpater {
   dependencies: string[] = [];
   devDependencies: string[] = [];
   tasks = new Listr();
-  options: updateOptions;
+  options: UpdateOptions;
 
-  constructor(options: updateOptions){
+  constructor(options: UpdateOptions){
     this.options = options;
   }
 
@@ -17,7 +17,7 @@ export class AngularUdpater {
     await this.loadPackageJson();
   }
 
-  addOptions(options: updateOptions){
+  addOptions(options: UpdateOptions){
     this.options = options;
   }
 
@@ -37,7 +37,13 @@ export class AngularUdpater {
   }
 
   private runCommend(commend: string) {
-    const runGitAdd = execSync(commend);
+    try {
+      execSync(commend);
+      return true;
+    } catch (error) {
+      return false;
+    }
+    
   }
 
   private gitAddCommit(packageName: string) {
@@ -75,7 +81,6 @@ export class AngularUdpater {
   }
 
   private npmAuditFix() {
-    console.log('run npm fix audit');
     const cmd = 'npm audit fix';
     this.runCommend(cmd);
     this.gitAddCommit('npm audit fix');
@@ -90,17 +95,14 @@ export class AngularUdpater {
 
   private updateGroup(depFromPackageJson: string[]) {
     try {
-      console.log('try');
       this.updateFast(depFromPackageJson);
     } catch (error) {
-      console.log('fallback');
       this.updateSlow(depFromPackageJson);
     }
   }
   
   loadPackageJson() {
     const json = JSON.parse(fs.readFileSync('package.json', 'utf8'))
-    console.log(json);
     this.dependencies = [];
     this.devDependencies = [];
     Object.keys(json.dependencies).forEach((element: string)=> {

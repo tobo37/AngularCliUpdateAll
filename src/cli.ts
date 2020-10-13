@@ -2,7 +2,7 @@ import arg from 'arg';
 import inquirer from 'inquirer';
 import { AngularUdpater } from '.';
 
-export interface updateOptions {
+export interface UpdateOptions {
     dependencies: boolean;
     devDependencies: boolean;
     all: boolean;
@@ -12,7 +12,7 @@ export interface updateOptions {
 
 
 
-function parseArgumentsIntoOptions(rawArgs: string[]): updateOptions {
+function parseArgumentsIntoOptions(rawArgs: string[]): UpdateOptions {
     const args = arg(
         {
             '--save': Boolean,
@@ -35,7 +35,7 @@ function parseArgumentsIntoOptions(rawArgs: string[]): updateOptions {
     };
 }
 
-async function promptForMissingOptions(options: updateOptions) {
+async function promptForMissingOptions(options: UpdateOptions) {
     if (options.all || options.dependencies || options.devDependencies) {
         return options;
     }
@@ -56,7 +56,7 @@ async function promptForMissingOptions(options: updateOptions) {
 
 
 export async function cli(args: any[]) {
-    let options: updateOptions = {dependencies: false,
+    const options: UpdateOptions = {dependencies: false,
     devDependencies: false,
     skipFix: false,
     all: true,
