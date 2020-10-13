@@ -56,13 +56,14 @@ async function promptForMissingOptions(options: UpdateOptions) {
 
 
 export async function cli(args: any[]) {
-    const options: UpdateOptions = {dependencies: false,
-    devDependencies: false,
-    skipFix: false,
-    all: true,
-    remaining: ''};
-    // let options = parseArgumentsIntoOptions(args);
-    // options = await promptForMissingOptions(options);
+    // const options: UpdateOptions = {dependencies: false,
+    // devDependencies: false,
+    // skipFix: false,
+    // all: true,
+    // remaining: ''};
+    // console.log('%s Invalid template name', chalk.red.bold('ERROR'));
+    let options = parseArgumentsIntoOptions(args);
+    options = await promptForMissingOptions(options);
     const angularUpdater = new AngularUdpater(options);
     await angularUpdater.exec();
 
