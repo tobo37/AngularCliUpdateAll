@@ -51,7 +51,7 @@ async function promptForMissingOptions(options: UpdateOptions) {
         default: 'all',
     });
 
-    const answers: 'dependencies' | 'devDependencies' | 'all'  = await inquirer.prompt(questions);
+    const answers: 'dependencies' | 'devDependencies' | 'all'  = (await inquirer.prompt(questions)).toString();
     console.log(chalk.green("choosed: " +answers));
     options[answers] = true;
     return options;
