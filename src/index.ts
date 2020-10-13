@@ -32,18 +32,16 @@ export class AngularUdpater {
 
   private prepareTasks(){
     this.tasks.add({title: "update Angular", task: async () => await this.updateAngular(), enabled: () => this.options.all});
-    this.tasks.add({title: "update bla", task: () => this.updateGroup(this.dependencies), enabled: () => this.options.all || this.options.dependencies});
-    this.tasks.add({title: "update dev", task: () => this.updateGroup(this.devDependencies), enabled: () => this.options.all || this.options.devDependencies});
+    this.tasks.add({title: "update dependencies", task: () => this.updateGroup(this.dependencies), enabled: () => this.options.all || this.options.dependencies});
+    this.tasks.add({title: "update devDependencies", task: () => this.updateGroup(this.devDependencies), enabled: () => this.options.all || this.options.devDependencies});
     this.tasks.add({title: "npm fix packages", task: () => this.npmAuditFix(), enabled: () => !this.options.skipFix});
   }
 
   private runCommend(commend: string) {
     try {
-      console.log("run next: " + commend);
       execSync(commend);
       return true;
     } catch (error) {
-      console.log(chalk.yellow(error));
       return false;
     }
     
