@@ -1,0 +1,49 @@
+const fs = require('fs');
+const { execSync } = require('child_process');
+
+const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+
+function gitAddCommit(packageName) {
+  console.log(`git add / commit: ${packageName}`);
+  execSync('git add .');
+  execSync(`git commit -m "${packageName}"`);
+}
+
+function updateAngular() {
+  console.log('next update @angular/cli @angular/core @angular/material');
+  execSync('npx ng update @angular/cli @angular/core @angular/material');
+  gitAddCommit('@angular/cli @angular/core @angular/material');
+}
+
+function updateDependencies() {
+  packageJson.dependencies.forEach((line) => {
+    const packageName = line.split(':')[0];
+    console.log(`next update: ${packageName}`);
+    execSync(`npx ng update ${packageName}`);
+    gitAddCommit(`update: ${packageName}`);
+  });
+}
+
+function updateDevDependencies() {
+  packageJson.devDependencies.forEach((line) => {
+    const packageName = line.split(':')[0];
+    console.log(`next update: ${packageName}`);
+    execSync(`npx ng update ${packageName}`);
+    gitAddCommit(`update: ${packageName}`);
+  });
+}
+
+function npmAuditFix() {
+  console.log('run npm fix audit');
+  execSync('npm audit fix');
+  gitAddCommit('npm audit fix');
+}
+
+function updateAllSlow() {
+  updateAngular();
+  updateDependencies();
+  updateDevDependencies();
+  npmAuditFix();
+}
+
+updateAllSlow();
