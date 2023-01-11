@@ -47,3 +47,16 @@ function updateAllSlow() {
 }
 
 updateAllSlow();
+
+#### update cli ###
+const [, , command] = process.argv;
+
+if (command === 'updateAllSlow') {
+  updateAllSlow();
+} else if (command === 'npmAuditFix') {
+  npmAuditFix();
+} else {
+  console.log('Invalid command. Available commands: updateAllSlow, npmAuditFix');
+}
+
+# aufruf mit node script.js npmAuditFix
