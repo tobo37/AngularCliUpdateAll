@@ -1,6 +1,6 @@
 {
   "name": "update-them-all",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A package to update Angular, dependencies, and devDependencies",
   "main": "index.js",
   "scripts": {

@@ -1,7 +1,5 @@
-# WIP: AngularCliUpdateAll
-Coffeebreak Script to update the full Project
+# Install
+npm i update-them-all --save-dev
 
-update.py works
-TODO:
-1. Convert in Typescript
-2. Create NPM Package
+# Use
+npx update-them-all

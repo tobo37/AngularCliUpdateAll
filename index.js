@@ -139,3 +139,16 @@ async function updateAll() {
 
   await npmAuditFix();
 }
+
+if (require.main === module) {
+    updateAll()
+      .then(() => {
+        console.log("Packages updated successfully!");
+      })
+      .catch((error) => {
+        console.error("Error updating packages:", error);
+      });
+  } else {
+    // Export the updateAll function when required as a module
+    exports.updateAll = updateAll;
+  }
