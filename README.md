@@ -67,3 +67,14 @@ npm audit fix
 ```
 between each step a git Commit is done, because "ng update" needs a clean branch.
 With update-them-all, you can keep your npm dependencies up-to-date in a streamlined, organized, and efficient manner.
+
+## Others
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=tobo37_AngularCliUpdateAll&metric=alert_status)](https://sonarcloud.
+io/summary/new_code?id=tobo37_AngularCliUpdateAll)
+
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=tobo37_AngularCliUpdateAll&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=tobo37_AngularCliUpdateAll)
+
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=tobo37_AngularCliUpdateAll&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=tobo37_AngularCliUpdateAll)
+
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=tobo37_AngularCliUpdateAll&metric=coverage)](https://sonarcloud.io/summary/new_code?id=tobo37_AngularCliUpdateAll)
