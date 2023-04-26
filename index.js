@@ -9,7 +9,7 @@ const util = require("util");
 const execAsync = util.promisify(exec);
 
 const packageJson = JSON.parse(fs.readFileSync("package.json", "utf-8"));
-exports.packageJson = packageJson;
+
 
 /**
 
@@ -154,4 +154,6 @@ if (require.main === module) {
   } else {
     // Export the updateAll function when required as a module
     exports.updateAll = updateAll;
+    exports.updatePackagesFast = updatePackagesFast;
+    exports.packageJson = packageJson;
   }
