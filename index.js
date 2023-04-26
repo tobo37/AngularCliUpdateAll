@@ -9,6 +9,7 @@ const util = require("util");
 const execAsync = util.promisify(exec);
 
 const packageJson = JSON.parse(fs.readFileSync("package.json", "utf-8"));
+exports.packageJson = packageJson;
 
 /**
 

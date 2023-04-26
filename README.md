@@ -42,4 +42,28 @@ updateThemAll.updateAll()
   });
 ```
 
+## Recommendation:
+Create a new branch like "update date[xy]" and then run the script
+
+```bash
+npx update-them-all
+```
+The branch must be clean
+
+## How does it work?
+The first step is an update of Angular
+```bash
+ng update @angular/cli @angular/core
+```
+Then try to update all dependancys and DevDependancys as oneliner with 
+```bash
+ng update [x] [y] [z] [...]
+```
+If the step does not work, then ng update is performed per dependency.
+
+The last step is 
+```bash
+npm audit fix
+```
+between each step a git Commit is done, because "ng update" needs a clean branch.
 With update-them-all, you can keep your npm dependencies up-to-date in a streamlined, organized, and efficient manner.

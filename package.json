@@ -4,8 +4,10 @@
   "description": "A package to update Angular, dependencies, and devDependencies",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "node make-executable.js"
+    "test": "jest"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "bin": {
     "update-them-all": "./index.js"
@@ -27,5 +29,8 @@
   "bugs": {
     "url": "https://github.com/tobo37/AngularCliUpdateAll/issues"
   },
-  "homepage": "https://github.com/tobo37/AngularCliUpdateAll#readme"
+  "homepage": "https://github.com/tobo37/AngularCliUpdateAll#readme",
+  "devDependencies": {
+    "jest": "^29.5.0"
+  }
 }
