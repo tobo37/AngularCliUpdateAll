@@ -1,2 +1,6 @@
 node_modules/
+coverage/Icov-report/**
+coverage/Icov-report/*
+coverage/Icov-report
 coverage/Icov-report/
+coverage/icov-report/
