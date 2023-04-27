@@ -1,3 +1,6 @@
+# 1.0.4
+- use chmodr
+
 # 1.0.3
 - Sonarqube Fixes
 - tests

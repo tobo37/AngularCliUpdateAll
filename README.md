@@ -70,8 +70,7 @@ With update-them-all, you can keep your npm dependencies up-to-date in a streaml
 
 ## Others
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=tobo37_AngularCliUpdateAll&metric=alert_status)](https://sonarcloud.
-io/summary/new_code?id=tobo37_AngularCliUpdateAll)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=tobo37_AngularCliUpdateAll&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=tobo37_AngularCliUpdateAll)
 
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=tobo37_AngularCliUpdateAll&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=tobo37_AngularCliUpdateAll)
 

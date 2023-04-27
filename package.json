@@ -4,7 +4,7 @@
   "description": "A package to update Angular, dependencies, and devDependencies",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "postinstall": "chmodr +x ./src/cli.js",
   "jest": {
