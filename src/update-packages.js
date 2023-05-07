@@ -8,7 +8,7 @@ const util = require("util");
 
 const execAsync = util.promisify(exec);
 
-const packageJson = JSON.parse(fs.readFileSync("package.json", "utf-8"));
+let packageJson = {}
 
 
 /**
@@ -109,6 +109,10 @@ async function npmAuditFix() {
   }
 }
 
+function loadPackages(){
+  packageJson = JSON.parse(fs.readFileSync("package.json", "utf-8"));
+}
+
 /**
 
  * Main function to update all packages.
@@ -117,6 +121,7 @@ async function npmAuditFix() {
 
 async function updateAll() {
   await updateAngular();
+  loadPackages()
 
   const dependencies = Object.keys(packageJson.dependencies);
 
@@ -144,5 +149,6 @@ async function updateAll() {
 }
 
 exports.updateAll = updateAll;
-    exports.updatePackagesFast = updatePackagesFast;
-    exports.packageJson = packageJson;
+exports.updatePackagesFast = updatePackagesFast;
+exports.updatePackages = updatePackages;
+exports.loadPackages = loadPackages;
