@@ -3,4 +3,4 @@
 const { updateAll } = require("./update-packages")
 const [,, ...args] = process.argv
 
-updateAll()
+updateAll().then(() => console.log("update complete"))

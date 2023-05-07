@@ -18,12 +18,12 @@
     "url": "https://github.com/tobo37/AngularCliUpdateAll.git"
   },
   "keywords": [
-    "Angular",
+    "angular",
     "npm",
     "cli",
     "updater",
-    "update all",
-    "package.json"
+    "update",
+    "package"
   ],
   "author": "\"package.json\"",
   "license": "MIT",
