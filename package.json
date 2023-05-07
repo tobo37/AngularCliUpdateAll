@@ -13,14 +13,14 @@
       "tests/old/",
       "tests/test-environment/"
     ],
-    "testTimeout": 300000
+    "testTimeout": 1800000
   },
   "bin": {
     "update-them-all": "./src/cli.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tobo37/AngularCliUpdateAll.git"
+    "url": "git+https://github.com/tobo37/AngularCliUpdateAll.git"
   },
   "keywords": [
     "angular",
