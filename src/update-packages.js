@@ -1,25 +1,19 @@
 #!/usr/bin/env node
 
-const fs = require("fs");
 
-const { exec } = require("child_process");
+const {execAsync, loadPackages} = require("./utility");
 
-const util = require("util");
-
-const execAsync = util.promisify(exec);
-
-let packageJson = {}
 
 
 /**
 
- * Add and commit changes using Git.
+ * Add and commit changes using Git.
 
- *
+ *
 
- * @param {string} packageName - The name of the package to include in the commit message.
+ * @param {string} packageName - The name of the package to include in the commit message.
 
- */
+ */
 
 async function stageAndCommitChanges(packageName) {
   console.log(`git add / commit: ${packageName}`);
@@ -51,15 +45,15 @@ async function updateAngular() {
 
 /**
 
- * Update a list of packages.
+ * Update a list of packages.
 
- *
+ *
 
- * @param {Array<string>} packages - An array of package names.
+ * @param {Array<string>} packages - An array of package names.
 
- * @param {string} type - The type of packages ('dependencies' or 'devDependencies').
+ * @param {string} type - The type of packages ('dependencies' or 'devDependencies').
 
- */
+ */
 
 async function updatePackages(packages, type) {
   console.log(`Updating ${type}:`);
@@ -109,19 +103,15 @@ async function npmAuditFix() {
   }
 }
 
-function loadPackages(){
-  packageJson = JSON.parse(fs.readFileSync("package.json", "utf-8"));
-}
-
 /**
 
- * Main function to update all packages.
+ * Main function to update all packages.
 
- */
+ */
 
 async function updateAll() {
   await updateAngular();
-  loadPackages()
+  const packageJson = loadPackages()
 
   const dependencies = Object.keys(packageJson.dependencies);
 
@@ -151,4 +141,3 @@ async function updateAll() {
 exports.updateAll = updateAll;
 exports.updatePackagesFast = updatePackagesFast;
 exports.updatePackages = updatePackages;
-exports.loadPackages = loadPackages;
