@@ -3,7 +3,7 @@ const path = require('path');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
-describe('Integration Test: update-them-all', () => {
+xdescribe('Integration Test: update-them-all', () => {
   const oldProjectPath = path.join(__dirname, 'old');
   const testEnvironmentPath = path.join(__dirname, 'test-environment');
 

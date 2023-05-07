@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 
-const {execAsync, loadPackages} = require("./utility");
+const { npmSync, npxSync, gitSync, loadPackages } = require("./utility");
 
 
 
@@ -18,27 +18,16 @@ const {execAsync, loadPackages} = require("./utility");
 async function stageAndCommitChanges(packageName) {
   console.log(`git add / commit: ${packageName}`);
 
-  const cmdAdd = "git add .";
-
   try {
-    await execAsync(cmdAdd);
-
-    const cmdCheckChanges = "git diff --cached --quiet";
-
-    await execAsync(cmdCheckChanges);
+    await gitSync(["add", "."]);
+    await gitSync(["diff", "--cached", "--quiet"]);
   } catch (error) {
-    const cmdCommit = `git commit -m "${packageName}"`;
-
-    await execAsync(cmdCommit);
+    await gitSync(["commit", "-m", packageName]);
   }
 }
 
 async function updateAngular() {
-  console.log("cmd: update @angular/cli @angular/core");
-
-  const cmd = "ng update @angular/cli @angular/core";
-
-  await execAsync(cmd);
+  await npxSync(["ng", "update", "@angular/cli", "@angular/core"]);
 
   await stageAndCommitChanges("@angular/cli @angular/core");
 }
@@ -59,12 +48,8 @@ async function updatePackages(packages, type) {
   console.log(`Updating ${type}:`);
 
   for (const packageName of packages) {
-    const cmd = `ng update ${packageName} --allow-dirty`;
-
-    console.log(`cmd: update: ${packageName}`);
-
     try {
-      await execAsync(cmd);
+      await npxSync(["ng", "update", packageName, "--allow-dirty"]);
     } catch (error) {
       console.error(`Error updating ${packageName}: ${error.message}`);
     }
@@ -78,14 +63,9 @@ async function updatePackages(packages, type) {
 async function updatePackagesFast(packages) {
   console.log("cmd: update Packages fast");
 
+  await npxSync(["ng", "update", ...packages]);
+
   const packageNames = packages.join(" ");
-
-  const cmd = `ng update ${packageNames}`;
-
-  console.log(`cmd: ${cmd}`);
-
-  await execAsync(cmd);
-
   await stageAndCommitChanges(packageNames);
 }
 
@@ -95,8 +75,7 @@ async function npmAuditFix() {
   const cmd = "npm audit fix";
 
   try {
-    await execAsync(cmd);
-
+    await npmSync(["audit", "fix"])
     await stageAndCommitChanges("npm audit fix");
   } catch (error) {
     console.error("Error running npm audit fix:", error.message);
@@ -138,6 +117,7 @@ async function updateAll() {
   await npmAuditFix();
 }
 
+// exports.modules = {updateAll, updatePackagesFast, updatePackages }
 exports.updateAll = updateAll;
 exports.updatePackagesFast = updatePackagesFast;
 exports.updatePackages = updatePackages;

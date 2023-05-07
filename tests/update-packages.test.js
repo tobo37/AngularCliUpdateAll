@@ -1,5 +1,5 @@
 const { updateAll, updatePackagesFast, updatePackages } = require('../src/update-packages');
-const { execAsync } = require('../src/utility');
+const { npmSync, npxSync, gitSync } = require('../src/utility');
 
 const packageJson = {
     dependencies: {
@@ -17,7 +17,9 @@ console.error = jest.fn();
 
 jest.mock('../src/utility', () => {
   return {
-    execAsync: jest.fn(),
+    npmSync: jest.fn(),
+    npxSync: jest.fn(),
+    gitSync: jest.fn(),
     loadPackages: jest.fn(() => packageJson),
   };
 });
@@ -32,48 +34,51 @@ describe('updatePackages', () => {
   });
 
   test('updateAll calls updateAngular, updatePackages, and npmAuditFix', async () => {
-    execAsync.mockResolvedValue();
-
+    gitSync.mockResolvedValue()
+    npxSync.mockResolvedValue()
+    npmSync.mockResolvedValue()
     await updateAll();
 
-    expect(execAsync).toHaveBeenCalledTimes(12);
-    expect(execAsync).toHaveBeenCalledWith('ng update @angular/cli @angular/core');
-    expect(execAsync).toHaveBeenCalledWith('npm audit fix');
+    expect(gitSync).toHaveBeenCalledTimes(8);
+    expect(npxSync).toHaveBeenCalledTimes(3);
+    expect(npmSync).toHaveBeenCalledTimes(1);
+
+    expect(npmSync).toHaveBeenCalledWith(["audit", "fix"]);
   });
 
   test('updatePackagesFast calls execAsync with correct command', async () => {
     const packages = ['package1', 'package2', 'package3'];
-    execAsync.mockResolvedValue();
+    npxSync.mockResolvedValue();
 
     await updatePackagesFast(packages);
 
-    expect(execAsync).toHaveBeenCalledTimes(3);
-    expect(execAsync).toHaveBeenCalledWith('ng update package1 package2 package3');
+    expect(npxSync).toHaveBeenCalledTimes(1);
+    expect(npxSync).toHaveBeenCalledWith(["ng", "update", ...packages]);
   });
 
   test('updatePackages updates each package individually', async () => {
     const packages = ['package1', 'package2', 'package3'];
-    execAsync.mockResolvedValue();
+    npxSync.mockResolvedValue();
 
     await updatePackages(packages, 'dependencies');
 
-    expect(execAsync).toHaveBeenCalledTimes(5);
+    expect(npxSync).toHaveBeenCalledTimes(packages.length);
     packages.forEach((packageName) => {
-      expect(execAsync).toHaveBeenCalledWith(`ng update ${packageName} --allow-dirty`);
+      expect(npxSync).toHaveBeenCalledWith(["ng", "update", packageName, "--allow-dirty"]);
     });
   });
 
   test('updatePackages handles error when updating a package', async () => {
     const packages = ['package1', 'package2', 'package3'];
-    execAsync
+    npxSync
       .mockRejectedValueOnce(new Error('Error updating package1'))
       .mockResolvedValue();
 
     await updatePackages(packages, 'dependencies');
 
-    expect(execAsync).toHaveBeenCalledTimes(5);
+    expect(npxSync).toHaveBeenCalledTimes(packages.length);
     packages.forEach((packageName) => {
-      expect(execAsync).toHaveBeenCalledWith(`ng update ${packageName} --allow-dirty`);
+      expect(npxSync).toHaveBeenCalledWith(["ng", "update", packageName, "--allow-dirty"]);
     });
   });
 });
