@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tobo37/AngularCliUpdateAll.git"
+    "url": "https://github.com/tobo37/AngularCliUpdateAll.git"
   },
   "keywords": [
     "Angular",
@@ -36,5 +36,8 @@
   },
   "dependencies": {
     "chmodr": "^1.2.0"
+  },
+  "publishConfig": {
+    "registry": "https://www.npmjs.com/package/update-them-all"
   }
 }
