@@ -2,3 +2,4 @@ node_modules/
 .vs/
 **/lcov-report/**
 tests/test-environments/**
+.vscode/**
