@@ -28,7 +28,7 @@
     "update",
     "package"
   ],
-  "author": "\"package.json\"",
+  "author": "Tobo37",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/tobo37/AngularCliUpdateAll/issues"
@@ -43,6 +43,7 @@
     "chmodr": "^1.2.0"
   },
   "publishConfig": {
-    "registry": "https://www.npmjs.com/package/update-them-all"
+    "registry": "https://www.npmjs.com/package/update-them-all",
+    "access": "public"
   }
 }
