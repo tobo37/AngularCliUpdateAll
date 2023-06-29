@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1683482256914" clover="3.2.0">
-  <project timestamp="1683482256914" name="All files">
+<coverage generated="1688058325767" clover="3.2.0">
+  <project timestamp="1688058325767" name="All files">
     <metrics statements="41" coveredstatements="35" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="6" elements="47" coveredelements="41" complexity="0" loc="41" ncloc="41" packages="1" files="1" classes="1"/>
-    <file name="update-packages.js" path="D:\Entwicklung\AngularCli\src\update-packages.js">
+    <file name="update-packages.js" path="E:\entwicklung\projects\AngularCliUpdateAll\src\update-packages.js">
       <metrics statements="41" coveredstatements="35" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="6"/>
       <line num="4" count="1" type="stmt"/>
       <line num="19" count="7" type="stmt"/>

@@ -9,10 +9,7 @@
   "postinstall": "chmodr +x ./src/cli.js",
   "jest": {
     "testEnvironment": "node",
-    "testPathIgnorePatterns": [
-      "tests/old/",
-      "tests/test-environment/"
-    ],
+    "testPathIgnorePatterns": [],
     "testTimeout": 1800000
   },
   "bin": {
@@ -38,7 +35,8 @@
   "homepage": "https://github.com/tobo37/AngularCliUpdateAll#readme",
   "devDependencies": {
     "fs-extra": "^11.1.1",
-    "jest": "^29.5.0"
+    "jest": "^29.5.0",
+    "semver": "^7.5.3"
   },
   "dependencies": {
     "chmodr": "^1.2.0"

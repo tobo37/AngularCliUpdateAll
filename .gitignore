@@ -1,5 +1,5 @@
 node_modules/
 .vs/
 **/lcov-report/**
-tests/test-environments/**
+tests/test-env/**
 .vscode/**
