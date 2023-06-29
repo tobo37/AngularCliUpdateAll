@@ -5,12 +5,19 @@ const packageJson = {
     dependencies: {
       dep1: '1.0.0',
       dep2: '2.0.0',
+      dep3: '3.0.0',
     },
     devDependencies: {
       devDep1: '1.0.0',
       devDep2: '2.0.0',
+      devDep3: '3.2.1',
     },
   };
+
+const configJson = {
+    ignoreDependencies: ['dep3'],
+    ignoreDevDependencies: ['devDep2'],
+}
 
   const originalConsoleError = console.error;
 console.error = jest.fn();
@@ -20,7 +27,9 @@ jest.mock('../src/utility', () => {
     npmSync: jest.fn(),
     npxSync: jest.fn(),
     gitSync: jest.fn(),
+    filterDependancies: jest.fn((dependencies, ignoreDependencies) => dependencies),
     loadPackages: jest.fn(() => packageJson),
+    loadConfig: jest.fn(() => configJson),
   };
 });
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 
-const { npmSync, npxSync, gitSync, loadPackages } = require("./utility");
+const { npmSync, npxSync, gitSync, loadPackages, loadConfig, filterDependancies } = require("./utility");
 
 
 
@@ -91,10 +91,10 @@ async function npmAuditFix() {
 async function updateAll() {
   await updateAngular();
   const packageJson = loadPackages()
+  const config = loadConfig();
 
-  const dependencies = Object.keys(packageJson.dependencies);
-
-  const devDependencies = Object.keys(packageJson.devDependencies);
+  const dependencies = filterDependancies(Object.keys(packageJson.dependencies), config.ignoreDependencies);
+  const devDependencies = filterDependancies(Object.keys(packageJson.devDependencies), config.ignoreDevDependencies);
 
   try {
     await updatePackagesFast(dependencies);

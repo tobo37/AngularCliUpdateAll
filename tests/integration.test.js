@@ -13,14 +13,15 @@ describe('Integration Test: update-them-all', () => {
         await fs.removeSync(testEnvironmentPath);
     }
     await exec("cd tests && npx npx @angular/cli@16.0.0 new test-env --skip-git --skip-tests");
-    await exec("npm link update-them-all");
+    await exec("cd tests/test-env && npm link update-them-all");
+    await exec("cd tests/test-env && node ../../src/postinstall-script.js");
     
   });
 
   afterEach(async() => {
     // Clean up the test-environment directory
-    await fs.removeSync(testEnvironmentPath);
-    await exec("npm unlink update-them-all");
+    // await fs.removeSync(testEnvironmentPath);
+    await exec("cd tests/test-env && npm unlink update-them-all");
   });
 
   it('should update all dependencies to the latest version', async () => {
@@ -31,7 +32,7 @@ describe('Integration Test: update-them-all', () => {
     let atLeastOneIsBiggerDevDep = false;
 
     // Run the library
-    await exec('npx update-them-all');
+    await exec('cd tests/test-env && npx update-them-all');
     const updatedPackageJson = require(path.join(testEnvironmentPath, 'package.json'));
 
     Object.keys(oldPackageJson.dependencies).forEach((dependency) => {
@@ -63,6 +64,7 @@ describe('Integration Test: update-them-all', () => {
 function isAngularVersionGreater(newDep, oldDep) {
   const oldAngularVersion = oldDep['@angular/cli'].replace(/[\^~]/g, '');
   const updatedAngularVersion = newDep['@angular/cli'].replace(/[\^~]/g, '');
+  console.log("old angular version is: " + oldAngularVersion + " and new angular version is: " + updatedAngularVersion)
   return semver.gt(updatedAngularVersion, oldAngularVersion)
 }
 

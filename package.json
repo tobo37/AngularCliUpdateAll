@@ -4,9 +4,10 @@
   "description": "A package to update Angular, dependencies, and devDependencies",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "link": "npm link && npm run postinstall"
   },
-  "postinstall": "chmodr +x ./src/cli.js",
+  "postinstall": "node ./src/postinstall.js",
   "jest": {
     "testEnvironment": "node",
     "testPathIgnorePatterns": [],

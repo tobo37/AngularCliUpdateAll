@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1688058325767" clover="3.2.0">
-  <project timestamp="1688058325767" name="All files">
-    <metrics statements="41" coveredstatements="35" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="6" elements="47" coveredelements="41" complexity="0" loc="41" ncloc="41" packages="1" files="1" classes="1"/>
+<coverage generated="1688074751884" clover="3.2.0">
+  <project timestamp="1688074751885" name="All files">
+    <metrics statements="57" coveredstatements="44" conditionals="9" coveredconditionals="0" methods="13" coveredmethods="9" elements="79" coveredelements="53" complexity="0" loc="57" ncloc="57" packages="1" files="2" classes="2"/>
     <file name="update-packages.js" path="E:\entwicklung\projects\AngularCliUpdateAll\src\update-packages.js">
-      <metrics statements="41" coveredstatements="35" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="6"/>
+      <metrics statements="42" coveredstatements="36" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="6"/>
       <line num="4" count="1" type="stmt"/>
       <line num="19" count="7" type="stmt"/>
       <line num="21" count="7" type="stmt"/>
@@ -31,7 +31,8 @@
       <line num="81" count="0" type="stmt"/>
       <line num="92" count="1" type="stmt"/>
       <line num="93" count="1" type="stmt"/>
-      <line num="95" count="1" type="stmt"/>
+      <line num="94" count="1" type="stmt"/>
+      <line num="96" count="1" type="stmt"/>
       <line num="97" count="1" type="stmt"/>
       <line num="99" count="1" type="stmt"/>
       <line num="100" count="1" type="stmt"/>
@@ -45,6 +46,24 @@
       <line num="121" count="1" type="stmt"/>
       <line num="122" count="1" type="stmt"/>
       <line num="123" count="1" type="stmt"/>
+    </file>
+    <file name="utility.js" path="E:\entwicklung\projects\AngularCliUpdateAll\src\utility.js">
+      <metrics statements="15" coveredstatements="8" conditionals="9" coveredconditionals="0" methods="7" coveredmethods="3"/>
+      <line num="1" count="3" type="stmt"/>
+      <line num="2" count="3" type="stmt"/>
+      <line num="5" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="6" count="0" type="stmt"/>
+      <line num="10" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="11" count="0" type="stmt"/>
+      <line num="15" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="16" count="0" type="stmt"/>
+      <line num="20" count="0" type="stmt"/>
+      <line num="24" count="2" type="stmt"/>
+      <line num="25" count="2" type="stmt"/>
+      <line num="27" count="2" type="stmt"/>
+      <line num="28" count="2" type="stmt"/>
+      <line num="38" count="9" type="stmt"/>
+      <line num="41" count="3" type="stmt"/>
     </file>
   </project>
 </coverage>
