@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-
+const jsonfile = require('jsonfile');
 const { npmSync, npxSync, gitSync, loadPackages, loadConfig, filterDependancies } = require("./utility");
 
 
@@ -86,6 +86,35 @@ async function npmAuditFix() {
   }
 }
 
+function removeVersionIcons(filepath) {
+  jsonfile.readFile(filepath, function(err, packageObj) {
+    if (err) console.error(err);
+
+    const dependencies = packageObj.dependencies;
+    const devDependencies = packageObj.devDependencies;
+
+    // Modify dependencies
+    for (const dep in dependencies) {
+      if (dependencies.hasOwnProperty(dep)) {
+        // Remove symbols
+        dependencies[dep] = dependencies[dep].replace(/[~^]/g, '');
+      }
+    }
+
+    // Modify devDependencies
+    for (const dep in devDependencies) {
+      if (devDependencies.hasOwnProperty(dep)) {
+        // Remove symbols
+        devDependencies[dep] = devDependencies[dep].replace(/[~^]/g, '');
+      }
+    }
+
+    jsonfile.writeFile(filepath, packageObj, { spaces: 2 }, function (err) {
+      if (err) console.error(err);
+    });
+  });
+}
+
 /**
 
  * Main function to update all packages.
@@ -124,6 +153,10 @@ async function updateAll() {
     );
 
     await updatePackages(devDependencies, "devDependencies");
+  }
+
+  if(config.removeVersionIcons) {
+    removeVersionIcons("package.json");
   }
 
   await npmAuditFix();
