@@ -26,12 +26,12 @@ async function stageAndCommitChanges(packageName) {
   }
 }
 
-async function updateAngular() {
-  if(!config.keepAngularMayorVersion) {
-    await npxSync(["ng", "update", "@angular/cli", "@angular/core"]);
-  } else {
+async function updateAngular(keepAngularMayorVersion) {
+  if(keepAngularMayorVersion) {
     const angularVersion = getAngularMayorVersion(packageJson);
     await npxSync(["ng", "update", `@angular/cli@${angularVersion}`, `@angular/core@${angularVersion}`]);
+  } else {
+    await npxSync(["ng", "update", "@angular/cli", "@angular/core"]);
   }
   await stageAndCommitChanges("@angular/cli @angular/core");
 }
@@ -93,7 +93,7 @@ async function npmAuditFix() {
  */
 
 async function updateAll() {
-  await updateAngular();
+  
   const packageJson = loadPackages()
   const config = loadConfig();
 
@@ -107,6 +107,7 @@ async function updateAll() {
   const dependencies = filterDependancies(Object.keys(packageJson.dependencies), config.ignoreDependencies);
   const devDependencies = filterDependancies(Object.keys(packageJson.devDependencies), config.ignoreDevDependencies);
 
+  await updateAngular(config.keepAngularMayorVersion);
   try {
     await updatePackagesFast(dependencies);
   } catch {
