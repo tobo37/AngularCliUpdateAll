@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const jsonfile = require('jsonfile');
-const { npmSync, npxSync, gitSync, loadPackages, loadConfig, filterDependancies } = require("./utility");
+const { npmSync, npxSync, gitSync, loadPackages, loadConfig, filterDependancies, getAngularMayorVersion } = require("./utility");
 
 
 
