@@ -38,4 +38,14 @@ function filterDependancies(dependencies, igonreDependencies) {
   return dependencies.filter((dep) => !igonreDependencies.includes(dep));
 }
 
-module.exports = { npmSync, npxSync, gitSync, loadPackages, loadConfig, filterDependancies };
+function getAngularMayorVersion(packageJson) {
+  const angularVersion = packageJson.dependencies['@angular/core'] || packageJson.devDependencies['@angular/core'];
+  if (!angularVersion) {
+    return null;
+  }
+  const angularVersionNumber = angularVersion.replace(/[^0-9.]/g, '');
+  const angularMayorVersion = angularVersionNumber.split('.')[0];
+  return angularMayorVersion;
+}
+
+module.exports = { npmSync, npxSync, gitSync, loadPackages, loadConfig, filterDependancies, getAngularMayorVersion };

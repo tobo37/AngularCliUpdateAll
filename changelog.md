@@ -1,3 +1,10 @@
+# 1.1.0
+- add update-config
+    - keepAngularMayorVersion default true
+    - removeVersioningSymbols default false
+    - ignoreDependencies 
+    - ignoreDevDependencies
+
 # no release
 - update integrationtests
 - fix pipeline

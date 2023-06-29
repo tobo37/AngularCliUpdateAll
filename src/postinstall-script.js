@@ -17,7 +17,6 @@ function findProjectRoot(currentDir) {
 
 function copyConfig() {
     const rootDir = findProjectRoot(__dirname);
-    console.log("my root dir is: " + rootDir + "and my current dir is: " + __dirname)
     const srcFile = path.join(__dirname, 'config', 'update-config.json');
     const destFile = path.join(rootDir, 'update-config.json');
 
