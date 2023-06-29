@@ -1,3 +1,7 @@
+# no release
+- update integrationtests
+- fix pipeline
+
 # 1.0.4
 - use chmodr
 
