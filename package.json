@@ -2,12 +2,13 @@
   "name": "update-them-all",
   "version": "1.1.0-rc.1",
   "description": "A package to update Angular, dependencies, and devDependencies",
-  "main": "index.js",
+  "main": "cli.js",
   "scripts": {
     "test": "jest --coverage",
-    "link": "npm link && npm run postinstall"
+    "link": "npm link && npm run postinstall",
+    "postinstall": "node ./src/postinstall.js"
   },
-  "postinstall": "node ./src/postinstall.js",
+  
   "jest": {
     "testEnvironment": "node",
     "testPathIgnorePatterns": [],
@@ -41,9 +42,5 @@
   },
   "dependencies": {
     "chmodr": "^1.2.0"
-  },
-  "publishConfig": {
-    "registry": "https://www.npmjs.com/package/update-them-all",
-    "access": "public"
   }
 }
