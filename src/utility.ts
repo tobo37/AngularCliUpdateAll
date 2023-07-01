@@ -1,26 +1,27 @@
-const fs = require("fs");
-const cp = require("child_process");
+import * as cp from "child_process";
+import * as fs from 'fs';
+import { packageJson } from "./model/packagejson.model";
 
-function npmSync(args, options = {}) {
+export function npmSync(args) {
   const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
-  return cp.spawnSync(npmCommand, args, { stdio: "inherit", shell: false, ...options });
+  return cp.spawnSync(npmCommand, args, { stdio: "inherit", shell: false});
 }
 
-function npxSync(args, options = {}) {
+export function npxSync(args) {
   const npxCommand = process.platform === "win32" ? "npx.cmd" : "npx";
-  return cp.spawnSync(npxCommand, args, { stdio: "inherit", shell: false, ...options });
+  return cp.spawnSync(npxCommand, args, { stdio: "inherit", shell: false});
 }
 
-function gitSync(args, options = {}) {
+export function gitSync(args) {
   const gitCommand = process.platform === "win32" ? "git.cmd" : "git";
-  return cp.spawnSync(gitCommand, args, { stdio: "inherit", shell: false, ...options });
+  return cp.spawnSync(gitCommand, args, { stdio: "inherit", shell: false });
 }
 
-function loadPackages() {
+export function loadPackages(): packageJson {
   return JSON.parse(fs.readFileSync("package.json", "utf-8"));
 }
 
-function loadConfig() {
+export function loadConfig() {
   try {
     return JSON.parse(fs.readFileSync('update-config.json', "utf-8"));
   } catch {
@@ -34,11 +35,11 @@ function loadConfig() {
   }
 }
 
-function filterDependancies(dependencies, igonreDependencies) {
+export function filterDependancies(dependencies: string[], igonreDependencies: string[]) {
   return dependencies.filter((dep) => !igonreDependencies.includes(dep));
 }
 
-function getAngularMayorVersion(packageJson) {
+export function getAngularMayorVersion(packageJson: packageJson) {
   const angularVersion = packageJson.dependencies['@angular/core'] || packageJson.devDependencies['@angular/core'];
   if (!angularVersion) {
     return null;
@@ -48,4 +49,4 @@ function getAngularMayorVersion(packageJson) {
   return angularMayorVersion;
 }
 
-module.exports = { npmSync, npxSync, gitSync, loadPackages, loadConfig, filterDependancies, getAngularMayorVersion };
+exports = { npmSync, npxSync, gitSync, loadPackages, loadConfig, filterDependancies, getAngularMayorVersion };

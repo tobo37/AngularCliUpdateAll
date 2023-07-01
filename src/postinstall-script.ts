@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const { platform } = require('os');
-const { exec } = require('child_process');
+import * as fs from 'fs';
+import * as path from 'path';
+import { platform } from 'os';
+import * as cp from "child_process";
 
 
 function findProjectRoot(currentDir) {
@@ -27,13 +27,7 @@ function makeItExecutable() {
     const isWindows = platform() === 'win32';
     const command = isWindows ? 'echo No action needed' : 'chmod +x ./src/cli.js';
 
-    exec(command, (error) => {
-        if (error) {
-            console.error(`Failed to set permissions: ${error.message}`);
-        } else {
-            console.log('Permissions set successfully.');
-        }
-    });
+    cp.spawnSync(command, { stdio: "inherit", shell: false });
 }
 
 

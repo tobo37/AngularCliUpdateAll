@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
-const jsonfile = require('jsonfile');
-const { npmSync, npxSync, gitSync, loadPackages, loadConfig, filterDependancies, getAngularMayorVersion } = require("./utility");
+import * as jsonfile from 'jsonfile';
+import { npmSync, npxSync, gitSync, loadPackages, loadConfig, filterDependancies, getAngularMayorVersion } from "./utility";
+import { packageJson } from './model/packagejson.model';
 
 
 
@@ -26,7 +27,7 @@ async function stageAndCommitChanges(packageName) {
   }
 }
 
-async function updateAngular(keepAngularMayorVersion) {
+async function updateAngular(keepAngularMayorVersion: boolean, packageJson: packageJson) {
   if(keepAngularMayorVersion) {
     const angularVersion = getAngularMayorVersion(packageJson);
     await npxSync(["ng", "update", `@angular/cli@${angularVersion}`, `@angular/core@${angularVersion}`]);
@@ -87,7 +88,7 @@ async function npmAuditFix() {
 }
 
 function removeVersionIcons(filepath) {
-  jsonfile.readFile(filepath, function(err, packageObj) {
+  jsonfile.readFile(filepath, function(err, packageObj: packageJson) {
     if (err) console.error(err);
 
     const dependencies = packageObj.dependencies;
@@ -95,15 +96,11 @@ function removeVersionIcons(filepath) {
 
     // Modify dependencies
     for (const dep in dependencies) {
-      if (dependencies.hasOwnProperty(dep)) {
-        // Remove symbols
         dependencies[dep] = dependencies[dep].replace(/[~^]/g, '');
       }
-    }
 
     // Modify devDependencies
     for (const dep in devDependencies) {
-      if (devDependencies.hasOwnProperty(dep)) {
         // Remove symbols
         devDependencies[dep] = devDependencies[dep].replace(/[~^]/g, '');
       }
@@ -121,7 +118,7 @@ function removeVersionIcons(filepath) {
 
  */
 
-async function updateAll() {
+export async function updateAll() {
   
   const packageJson = loadPackages()
   const config = loadConfig();
@@ -136,7 +133,7 @@ async function updateAll() {
   const dependencies = filterDependancies(Object.keys(packageJson.dependencies), config.ignoreDependencies);
   const devDependencies = filterDependancies(Object.keys(packageJson.devDependencies), config.ignoreDevDependencies);
 
-  await updateAngular(config.keepAngularMayorVersion);
+  await updateAngular(config.keepAngularMayorVersion, packageJson);
   try {
     await updatePackagesFast(dependencies);
   } catch {
