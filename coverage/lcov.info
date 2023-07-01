@@ -6,8 +6,8 @@ FN:52,updatePackages
 FN:68,updatePackagesFast
 FN:77,npmAuditFix
 FN:88,removeVersionIcons
-FN:89,(anonymous_6)
-FN:109,(anonymous_7)
+FN:89,(anonymous_12)
+FN:109,(anonymous_13)
 FN:124,updateAll
 FNF:9
 FNH:6
@@ -17,8 +17,8 @@ FNDA:2,updatePackages
 FNDA:3,updatePackagesFast
 FNDA:1,npmAuditFix
 FNDA:0,removeVersionIcons
-FNDA:0,(anonymous_6)
-FNDA:0,(anonymous_7)
+FNDA:0,(anonymous_12)
+FNDA:0,(anonymous_13)
 FNDA:1,updateAll
 DA:3,1
 DA:4,1
@@ -108,7 +108,7 @@ FN:15,gitSync
 FN:20,loadPackages
 FN:24,loadConfig
 FN:38,filterDependancies
-FN:39,(anonymous_6)
+FN:39,(anonymous_12)
 FN:42,getAngularMayorVersion
 FNF:8
 FNH:3
@@ -118,7 +118,7 @@ FNDA:0,gitSync
 FNDA:0,loadPackages
 FNDA:2,loadConfig
 FNDA:3,filterDependancies
-FNDA:9,(anonymous_6)
+FNDA:9,(anonymous_12)
 FNDA:0,getAngularMayorVersion
 DA:1,1
 DA:2,1

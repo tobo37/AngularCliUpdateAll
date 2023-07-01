@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1688251809781" clover="3.2.0">
-  <project timestamp="1688251809781" name="All files">
+<coverage generated="1688252655584" clover="3.2.0">
+  <project timestamp="1688252655584" name="All files">
     <metrics statements="96" coveredstatements="56" conditionals="15" coveredconditionals="1" methods="17" coveredmethods="9" elements="128" coveredelements="66" complexity="0" loc="96" ncloc="96" packages="1" files="2" classes="2"/>
     <file name="update-packages.ts" path="C:\Entwicklung\AngularCliUpdateAll\src\update-packages.ts">
       <metrics statements="69" coveredstatements="42" conditionals="6" coveredconditionals="1" methods="9" coveredmethods="6"/>

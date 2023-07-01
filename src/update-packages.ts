@@ -16,7 +16,7 @@ import { packageJson } from './model/packagejson.model';
 
  */
 
-async function stageAndCommitChanges(packageName) {
+async function stageAndCommitChanges(packageName: string) {
   console.log(`git add / commit: ${packageName}`);
 
   try {
@@ -49,14 +49,14 @@ async function updateAngular(keepAngularMayorVersion: boolean, packageJson: pack
 
  */
 
-export async function updatePackages(packages, type) {
+export async function updatePackages(packages: string[], type: string) {
   console.log(`Updating ${type}:`);
 
   for (const packageName of packages) {
     try {
       await npxSync(["ng", "update", packageName, "--allow-dirty"]);
     } catch (error) {
-      console.error(`Error updating ${packageName}: ${error.message}`);
+      console.error(`Error updating ${packageName}: ${error}`);
     }
   }
 
@@ -65,7 +65,7 @@ export async function updatePackages(packages, type) {
   await stageAndCommitChanges(packageNames);
 }
 
-export async function updatePackagesFast(packages) {
+export async function updatePackagesFast(packages: string[]) {
   console.log("cmd: update Packages fast");
 
   await npxSync(["ng", "update", ...packages]);
@@ -78,10 +78,10 @@ async function npmAuditFix() {
   console.log("npm audit fix");
 
   try {
-    await npmSync(["audit", "fix"])
+    npmSync(["audit", "fix"])
     await stageAndCommitChanges("npm audit fix");
   } catch (error) {
-    console.error("Error running npm audit fix:", error.message);
+    console.error("Error running npm audit fix:", error);
   }
 }
 

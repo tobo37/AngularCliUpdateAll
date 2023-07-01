@@ -4,7 +4,7 @@ import { platform } from 'os';
 import * as cp from "child_process";
 
 
-function findProjectRoot(currentDir) {
+function findProjectRoot(currentDir: string) {
     if (fs.existsSync(path.join(currentDir, 'package.json'))) {
         return currentDir;
     }
@@ -17,6 +17,10 @@ function findProjectRoot(currentDir) {
 
 function copyConfig() {
     const rootDir = findProjectRoot(__dirname);
+    if (!rootDir) {
+        console.error('Could not find project root');
+        return;
+    }
     const srcFile = path.join(__dirname, 'config', 'update-config.json');
     const destFile = path.join(rootDir, 'update-config.json');
 

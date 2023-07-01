@@ -2,17 +2,17 @@ import * as cp from "child_process";
 import * as fs from 'fs';
 import { packageJson } from "./model/packagejson.model";
 
-export function npmSync(args) {
+export function npmSync(args: string[]) {
   const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
   return cp.spawnSync(npmCommand, args, { stdio: "inherit", shell: false});
 }
 
-export function npxSync(args) {
+export function npxSync(args: string[]) {
   const npxCommand = process.platform === "win32" ? "npx.cmd" : "npx";
   return cp.spawnSync(npxCommand, args, { stdio: "inherit", shell: false});
 }
 
-export function gitSync(args) {
+export function gitSync(args: string[]) {
   const gitCommand = process.platform === "win32" ? "git.cmd" : "git";
   return cp.spawnSync(gitCommand, args, { stdio: "inherit", shell: false });
 }

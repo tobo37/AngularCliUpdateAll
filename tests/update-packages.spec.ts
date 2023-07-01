@@ -27,7 +27,7 @@ jest.mock('../src/utility', () => {
     npmSync: jest.fn(),
     npxSync: jest.fn(),
     gitSync: jest.fn(),
-    filterDependancies: jest.fn((dependencies, ignoreDependencies) => dependencies),
+    // filterDependancies: jest.fn((dependencies, ignoreDependencies) => dependencies),
     loadPackages: jest.fn(() => packageJson),
     loadConfig: jest.fn(() => configJson),
   };
