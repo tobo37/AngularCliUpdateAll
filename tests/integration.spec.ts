@@ -1,8 +1,10 @@
-const fs = require('fs-extra');
-const path = require('path');
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
-const semver = require('semver');
+import fs from 'fs-extra';
+import { promisify } from 'util';
+import { exec as childProcessExec } from 'child_process';
+import semver from 'semver';
+import * as path from 'path';
+
+const exec = promisify(childProcessExec);
 
 describe('Integration Test: update-them-all', () => {
   const testEnvironmentPath = path.join(__dirname, 'test-env');
@@ -10,35 +12,35 @@ describe('Integration Test: update-them-all', () => {
   beforeEach(async () => {
     // Clean up the test-environment directory if it exists
     if (fs.existsSync(testEnvironmentPath)) {
-        await fs.removeSync(testEnvironmentPath);
+      await fs.removeSync(testEnvironmentPath);
     }
     await exec("cd tests && npx npx @angular/cli@16.0.0 new test-env --skip-git --skip-tests");
     await exec("cd tests/test-env && npm link update-them-all");
     await exec("cd tests/test-env && node ../../src/postinstall-script.js");
-    
+
   });
 
-  afterEach(async() => {
+  afterEach(async () => {
     // Clean up the test-environment directory
     // await fs.removeSync(testEnvironmentPath);
     await exec("cd tests/test-env && npm unlink update-them-all");
   });
 
   it('should update all dependencies to the latest version', async () => {
-    const oldPackageJson = require(path.join(testEnvironmentPath, 'package.json'));
-    
+    const testPathsPackageJson = path.join(testEnvironmentPath, 'package.json');
+    const oldPackageJson = JSON.parse(fs.readFileSync(testPathsPackageJson, 'utf-8'));
 
     let atLeastOneIsBiggerDep = false;
     let atLeastOneIsBiggerDevDep = false;
 
     // Run the library
     await exec('cd tests/test-env && npx update-them-all');
-    const updatedPackageJson = require(path.join(testEnvironmentPath, 'package.json'));
+    const updatedPackageJson = JSON.parse(fs.readFileSync(testPathsPackageJson, 'utf-8'));
 
     Object.keys(oldPackageJson.dependencies).forEach((dependency) => {
       const oldDep = oldPackageJson.dependencies[dependency];
       const updatedDep = updatedPackageJson.dependencies[dependency];
-      if(isVersionDifferent(updatedDep, oldDep)){
+      if (isVersionDifferent(updatedDep, oldDep)) {
         atLeastOneIsBiggerDep = true;
       }
       expect(isVersionGreaterThanOrEqual(updatedDep, oldDep)).toBeTruthy();
@@ -47,7 +49,7 @@ describe('Integration Test: update-them-all', () => {
     Object.keys(oldPackageJson.devDependencies).forEach((dependency) => {
       const oldDep = oldPackageJson.devDependencies[dependency];
       const updatedDep = updatedPackageJson.devDependencies[dependency];
-      if(isVersionDifferent){
+      if (isVersionDifferent(updatedDep, oldDep)) {
         atLeastOneIsBiggerDevDep = true;
       }
       expect(isVersionGreaterThanOrEqual(updatedDep, oldDep)).toBeTruthy();
@@ -68,15 +70,15 @@ function isAngularVersionGreater(newDep, oldDep) {
   return semver.gt(updatedAngularVersion, oldAngularVersion)
 }
 
-   
+
 
 
 function isVersionGreaterThanOrEqual(updatedVersion, oldVersion) {
-    return semver.gte(updatedVersion.replace(/[\^~]/g, ''), oldVersion.replace(/[\^~]/g, ''));
-  }
+  return semver.gte(updatedVersion.replace(/[\^~]/g, ''), oldVersion.replace(/[\^~]/g, ''));
+}
 
-  function isVersionDifferent(updatedVersion, oldVersion) {
-    return (
-      semver.eq(updatedVersion.replace(/[\^~]/g, ''), oldVersion.replace(/[\^~]/g, ''))
-    );
-  }
+function isVersionDifferent(updatedVersion, oldVersion) {
+  return (
+    semver.eq(updatedVersion.replace(/[\^~]/g, ''), oldVersion.replace(/[\^~]/g, ''))
+  );
+}

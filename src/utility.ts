@@ -48,5 +48,3 @@ export function getAngularMayorVersion(packageJson: packageJson) {
   const angularMayorVersion = angularVersionNumber.split('.')[0];
   return angularMayorVersion;
 }
-
-exports = { npmSync, npxSync, gitSync, loadPackages, loadConfig, filterDependancies, getAngularMayorVersion };

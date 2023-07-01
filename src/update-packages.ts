@@ -49,7 +49,7 @@ async function updateAngular(keepAngularMayorVersion: boolean, packageJson: pack
 
  */
 
-async function updatePackages(packages, type) {
+export async function updatePackages(packages, type) {
   console.log(`Updating ${type}:`);
 
   for (const packageName of packages) {
@@ -65,7 +65,7 @@ async function updatePackages(packages, type) {
   await stageAndCommitChanges(packageNames);
 }
 
-async function updatePackagesFast(packages) {
+export async function updatePackagesFast(packages) {
   console.log("cmd: update Packages fast");
 
   await npxSync(["ng", "update", ...packages]);
@@ -75,9 +75,7 @@ async function updatePackagesFast(packages) {
 }
 
 async function npmAuditFix() {
-  console.log("run npm fix audit");
-
-  const cmd = "npm audit fix";
+  console.log("npm audit fix");
 
   try {
     await npmSync(["audit", "fix"])
@@ -87,27 +85,32 @@ async function npmAuditFix() {
   }
 }
 
-function removeVersionIcons(filepath) {
+function removeVersionIcons(filepath: string) {
   jsonfile.readFile(filepath, function(err, packageObj: packageJson) {
-    if (err) console.error(err);
+    if (err) {
+      console.error(err);
+      return;
+    }
 
     const dependencies = packageObj.dependencies;
     const devDependencies = packageObj.devDependencies;
 
     // Modify dependencies
     for (const dep in dependencies) {
-        dependencies[dep] = dependencies[dep].replace(/[~^]/g, '');
-      }
+      dependencies[dep] = dependencies[dep].replace(/[~^]/g, '');
+    }
 
     // Modify devDependencies
     for (const dep in devDependencies) {
-        // Remove symbols
-        devDependencies[dep] = devDependencies[dep].replace(/[~^]/g, '');
-      }
+      // Remove symbols
+      devDependencies[dep] = devDependencies[dep].replace(/[~^]/g, '');
     }
 
     jsonfile.writeFile(filepath, packageObj, { spaces: 2 }, function (err) {
-      if (err) console.error(err);
+      if (err) {
+        console.error(err);
+        return;
+      }
     });
   });
 }

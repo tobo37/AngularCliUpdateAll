@@ -1,5 +1,5 @@
-const { updateAll, updatePackagesFast, updatePackages } = require('../src/update-packages');
-const { npmSync, npxSync, gitSync } = require('../src/utility');
+import { updateAll, updatePackagesFast, updatePackages } from '../src/update-packages';
+import * as utils from '../src/utility';
 
 const packageJson = {
     dependencies: {
@@ -43,51 +43,54 @@ describe('updatePackages', () => {
   });
 
   test('updateAll calls updateAngular, updatePackages, and npmAuditFix', async () => {
-    gitSync.mockResolvedValue()
-    npxSync.mockResolvedValue()
-    npmSync.mockResolvedValue()
+
+    const gitSpy = jest.spyOn(utils, 'gitSync');
+    const npxSpy = jest.spyOn(utils, 'npxSync');
+    const npmSpy = jest.spyOn(utils, 'npmSync');
+
     await updateAll();
 
-    expect(gitSync).toHaveBeenCalledTimes(8);
-    expect(npxSync).toHaveBeenCalledTimes(3);
-    expect(npmSync).toHaveBeenCalledTimes(1);
+    expect(gitSpy).toHaveBeenCalledTimes(8);
+    expect(npxSpy).toHaveBeenCalledTimes(3);
+    expect(npmSpy).toHaveBeenCalledTimes(1);
 
-    expect(npmSync).toHaveBeenCalledWith(["audit", "fix"]);
+    expect(npmSpy).toHaveBeenCalledWith(["audit", "fix"]);
   });
 
   test('updatePackagesFast calls execAsync with correct command', async () => {
     const packages = ['package1', 'package2', 'package3'];
-    npxSync.mockResolvedValue();
+    const npxSpy = jest.spyOn(utils, 'npxSync');
 
     await updatePackagesFast(packages);
 
-    expect(npxSync).toHaveBeenCalledTimes(1);
-    expect(npxSync).toHaveBeenCalledWith(["ng", "update", ...packages]);
+    expect(npxSpy).toHaveBeenCalledTimes(1);
+    expect(npxSpy).toHaveBeenCalledWith(["ng", "update", ...packages]);
   });
 
   test('updatePackages updates each package individually', async () => {
     const packages = ['package1', 'package2', 'package3'];
-    npxSync.mockResolvedValue();
+    const npxSpy = jest.spyOn(utils, 'npxSync');
 
     await updatePackages(packages, 'dependencies');
 
-    expect(npxSync).toHaveBeenCalledTimes(packages.length);
+    expect(npxSpy).toHaveBeenCalledTimes(packages.length);
     packages.forEach((packageName) => {
-      expect(npxSync).toHaveBeenCalledWith(["ng", "update", packageName, "--allow-dirty"]);
+      expect(npxSpy).toHaveBeenCalledWith(["ng", "update", packageName, "--allow-dirty"]);
     });
   });
 
   test('updatePackages handles error when updating a package', async () => {
     const packages = ['package1', 'package2', 'package3'];
-    npxSync
-      .mockRejectedValueOnce(new Error('Error updating package1'))
-      .mockResolvedValue();
+    const npxSpy = jest.spyOn(utils, 'npxSync').mockImplementationOnce(() => {
+      throw new Error('Error updating package1');
+    });
+    
 
     await updatePackages(packages, 'dependencies');
 
-    expect(npxSync).toHaveBeenCalledTimes(packages.length);
+    expect(npxSpy).toHaveBeenCalledTimes(packages.length);
     packages.forEach((packageName) => {
-      expect(npxSync).toHaveBeenCalledWith(["ng", "update", packageName, "--allow-dirty"]);
+      expect(npxSpy).toHaveBeenCalledWith(["ng", "update", packageName, "--allow-dirty"]);
     });
   });
 });
