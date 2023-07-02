@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import * as jsonfile from 'jsonfile';
-import { npmSync, npxSync, gitSync, loadPackages, loadConfig, filterDependancies, getAngularMayorVersion } from "./utility";
 import { packageJson } from './model/packagejson.model';
+import { filterDependancies, getAngularMayorVersion, gitSync, loadConfig, loadPackages, npmSync, npxSync } from "./utility";
 
 
 
@@ -20,19 +20,19 @@ async function stageAndCommitChanges(packageName: string) {
   console.log(`git add / commit: ${packageName}`);
 
   try {
-    await gitSync(["add", "."]);
-    await gitSync(["diff", "--cached", "--quiet"]);
+    gitSync(["add", "."]);
+    gitSync(["diff", "--cached", "--quiet"]);
   } catch (error) {
-    await gitSync(["commit", "-m", packageName]);
+    gitSync(["commit", "-m", packageName]);
   }
 }
 
 async function updateAngular(keepAngularMayorVersion: boolean, packageJson: packageJson) {
   if(keepAngularMayorVersion) {
     const angularVersion = getAngularMayorVersion(packageJson);
-    await npxSync(["ng", "update", `@angular/cli@${angularVersion}`, `@angular/core@${angularVersion}`]);
+    npxSync(["ng", "update", `@angular/cli@${angularVersion}`, `@angular/core@${angularVersion}`]);
   } else {
-    await npxSync(["ng", "update", "@angular/cli", "@angular/core"]);
+    npxSync(["ng", "update", "@angular/cli", "@angular/core"]);
   }
   await stageAndCommitChanges("@angular/cli @angular/core");
 }
@@ -54,7 +54,7 @@ export async function updatePackages(packages: string[], type: string) {
 
   for (const packageName of packages) {
     try {
-      await npxSync(["ng", "update", packageName, "--allow-dirty"]);
+      npxSync(["ng", "update", packageName, "--allow-dirty"]);
     } catch (error) {
       console.error(`Error updating ${packageName}: ${error}`);
     }
@@ -68,7 +68,7 @@ export async function updatePackages(packages: string[], type: string) {
 export async function updatePackagesFast(packages: string[]) {
   console.log("cmd: update Packages fast");
 
-  await npxSync(["ng", "update", ...packages]);
+  npxSync(["ng", "update", ...packages]);
 
   const packageNames = packages.join(" ");
   await stageAndCommitChanges(packageNames);
@@ -109,7 +109,6 @@ function removeVersionIcons(filepath: string) {
     jsonfile.writeFile(filepath, packageObj, { spaces: 2 }, function (err) {
       if (err) {
         console.error(err);
-        return;
       }
     });
   });
@@ -162,7 +161,7 @@ export async function updateAll() {
   await npmAuditFix();
 }
 
-// exports.modules = {updateAll, updatePackagesFast, updatePackages }
+
 exports.updateAll = updateAll;
 exports.updatePackagesFast = updatePackagesFast;
 exports.updatePackages = updatePackages;

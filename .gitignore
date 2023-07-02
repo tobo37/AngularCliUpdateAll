@@ -4,4 +4,4 @@ node_modules/
 tests/test-env/**
 .vscode/**
 .npmrc
-tsc-output
+dist

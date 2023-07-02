@@ -1,4 +1,4 @@
-import { updateAll, updatePackagesFast, updatePackages } from '../src/update-packages';
+import { updateAll, updatePackages, updatePackagesFast } from '../src/update-packages';
 import * as utils from '../src/utility';
 
 const packageJson = {
@@ -27,7 +27,7 @@ jest.mock('../src/utility', () => {
     npmSync: jest.fn(),
     npxSync: jest.fn(),
     gitSync: jest.fn(),
-    // filterDependancies: jest.fn((dependencies, ignoreDependencies) => dependencies),
+    filterDependancies: jest.fn((dependencies, ignoreDependencies) => dependencies),
     loadPackages: jest.fn(() => packageJson),
     loadConfig: jest.fn(() => configJson),
   };

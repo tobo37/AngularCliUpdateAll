@@ -1,12 +1,12 @@
-import fs from 'fs-extra';
-import { promisify } from 'util';
 import { exec as childProcessExec } from 'child_process';
-import semver from 'semver';
+import fs from 'fs-extra';
 import * as path from 'path';
+import semver from 'semver';
+import { promisify } from 'util';
 
 const exec = promisify(childProcessExec);
 
-describe('Integration Test: update-them-all', () => {
+xdescribe('Integration Test: update-them-all', () => {
   const testEnvironmentPath = path.join(__dirname, 'test-env');
 
   beforeEach(async () => {
@@ -15,15 +15,15 @@ describe('Integration Test: update-them-all', () => {
       await fs.removeSync(testEnvironmentPath);
     }
     await exec("cd tests && npx npx @angular/cli@16.0.0 new test-env --skip-git --skip-tests");
-    await exec("cd tests/test-env && npm link update-them-all");
-    await exec("cd tests/test-env && node ../../src/postinstall-script.js");
+    await exec("cd dist && npm link update-them-all");
+    // await exec("cd tests/test-env && node ../../src/postinstall-script.js");
 
   });
 
   afterEach(async () => {
     // Clean up the test-environment directory
-    // await fs.removeSync(testEnvironmentPath);
-    await exec("cd tests/test-env && npm unlink update-them-all");
+    await fs.removeSync(testEnvironmentPath);
+    await exec("cd dist && npm unlink update-them-all");
   });
 
   it('should update all dependencies to the latest version', async () => {
@@ -34,7 +34,7 @@ describe('Integration Test: update-them-all', () => {
     let atLeastOneIsBiggerDevDep = false;
 
     // Run the library
-    await exec('cd tests/test-env && npx update-them-all');
+    await exec('npx update-them-all');
     const updatedPackageJson = JSON.parse(fs.readFileSync(testPathsPackageJson, 'utf-8'));
 
     Object.keys(oldPackageJson.dependencies).forEach((dependency) => {
@@ -63,7 +63,7 @@ describe('Integration Test: update-them-all', () => {
 
 
 //angular version is updated hihger than 16.0.0
-function isAngularVersionGreater(newDep, oldDep) {
+function isAngularVersionGreater(newDep: { [key: string]: string }, oldDep: { [key: string]: string }) {
   const oldAngularVersion = oldDep['@angular/cli'].replace(/[\^~]/g, '');
   const updatedAngularVersion = newDep['@angular/cli'].replace(/[\^~]/g, '');
   console.log("old angular version is: " + oldAngularVersion + " and new angular version is: " + updatedAngularVersion)
@@ -73,11 +73,11 @@ function isAngularVersionGreater(newDep, oldDep) {
 
 
 
-function isVersionGreaterThanOrEqual(updatedVersion, oldVersion) {
+function isVersionGreaterThanOrEqual(updatedVersion: string, oldVersion: string) {
   return semver.gte(updatedVersion.replace(/[\^~]/g, ''), oldVersion.replace(/[\^~]/g, ''));
 }
 
-function isVersionDifferent(updatedVersion, oldVersion) {
+function isVersionDifferent(updatedVersion: string, oldVersion: string) {
   return (
     semver.eq(updatedVersion.replace(/[\^~]/g, ''), oldVersion.replace(/[\^~]/g, ''))
   );

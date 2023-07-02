@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-      "outDir": "./tsc-output",
+      "outDir": "./dist",
       "allowJs": true,
       "target": "es5",
       "module": "commonjs",
@@ -8,6 +8,6 @@
       "strict": true,
       "esModuleInterop": true
     },
-    "include": ["./src/**/*"],
+    "include": ["./src/**/*", "package.json"],
     "exclude": ["node_modules", "**/.spec./*"]
   }
