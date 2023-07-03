@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1688295602783" clover="3.2.0">
-  <project timestamp="1688295602783" name="All files">
+<coverage generated="1688387520589" clover="3.2.0">
+  <project timestamp="1688387520589" name="All files">
     <metrics statements="92" coveredstatements="53" conditionals="15" coveredconditionals="1" methods="17" coveredmethods="9" elements="124" coveredelements="63" complexity="0" loc="92" ncloc="92" packages="1" files="2" classes="2"/>
-    <file name="update-packages.ts" path="E:\entwicklung\projects\AngularCliUpdateAll\src\update-packages.ts">
+    <file name="update-packages.ts" path="C:\Entwicklung\AngularCliUpdateAll\src\update-packages.ts">
       <metrics statements="65" coveredstatements="39" conditionals="6" coveredconditionals="1" methods="9" coveredmethods="6"/>
       <line num="3" count="1" type="stmt"/>
       <line num="5" count="1" type="stmt"/>
@@ -70,7 +70,7 @@
       <line num="166" count="1" type="stmt"/>
       <line num="167" count="1" type="stmt"/>
     </file>
-    <file name="utility.ts" path="E:\entwicklung\projects\AngularCliUpdateAll\src\utility.ts">
+    <file name="utility.ts" path="C:\Entwicklung\AngularCliUpdateAll\src\utility.ts">
       <metrics statements="27" coveredstatements="14" conditionals="9" coveredconditionals="0" methods="8" coveredmethods="3"/>
       <line num="1" count="1" type="stmt"/>
       <line num="2" count="1" type="stmt"/>
