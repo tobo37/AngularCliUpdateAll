@@ -122,7 +122,7 @@ function removeVersionIcons(filepath: string) {
 
 export async function updateAll() {
   
-  const packageJson = loadPackages()
+  const packageJson = loadPackages();
   const config = loadConfig();
 
   if(config.keepAngularMayorVersion){
