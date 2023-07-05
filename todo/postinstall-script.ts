@@ -4,7 +4,7 @@ import { platform } from 'os';
 import * as cp from "child_process";
 
 
-function findProjectRoot(currentDir: string) {
+export function findProjectRoot(currentDir: string) {
     if (fs.existsSync(path.join(currentDir, 'package.json'))) {
         return currentDir;
     }
@@ -15,7 +15,7 @@ function findProjectRoot(currentDir: string) {
     return null;
 }
 
-function copyConfig() {
+export function copyConfig() {
     const rootDir = findProjectRoot(__dirname);
     if (!rootDir) {
         console.error('Could not find project root');
@@ -27,7 +27,7 @@ function copyConfig() {
     fs.copyFileSync(srcFile, destFile);
 }
 
-function makeItExecutable() {
+export function makeItExecutable() {
     const isWindows = platform() === 'win32';
     const command = isWindows ? 'echo No action needed' : 'chmod +x ./src/cli.js';
 

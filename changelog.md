@@ -4,6 +4,10 @@
     - removeVersioningSymbols default false
     - ignoreDependencies 
     - ignoreDevDependencies
+- switch to typescript
+- remove postinstall (dose not work after npm 6) -> add a script. Not implement now
+- more unit tests, broken integration test
+- sonarqube fixes
 
 # no release
 - update integrationtests
