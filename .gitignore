@@ -3,3 +3,5 @@ node_modules/
 **/lcov-report/**
 tests/test-env/**
 .vscode/**
+.npmrc
+dist
