@@ -17,7 +17,6 @@ jobs:
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         with:
-          projectBaseDir: my-custom-directory
           args: >
             -Dsonar.organization=tobo37
             -Dsonar.projectKey=AngularCliUpdateAll
