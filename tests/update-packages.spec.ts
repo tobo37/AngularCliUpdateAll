@@ -1,5 +1,6 @@
-import { updateAll, updatePackages, updatePackagesFast } from '../src/update-packages';
+import { updateAll, updatePackages, updatePackagesFast, removeVersionIcons } from '../src/update-packages';
 import * as utils from '../src/utility';
+import jsonfile from 'jsonfile';
 
 const packageJson = {
     dependencies: {
@@ -92,5 +93,51 @@ describe('updatePackages', () => {
     packages.forEach((packageName) => {
       expect(npxSpy).toHaveBeenCalledWith(["ng", "update", packageName, "--allow-dirty"]);
     });
+  });
+});
+jest.mock('jsonfile');
+
+describe('removeVersionIcons', () => {
+  it('should remove version icons from dependencies and devDependencies', async () => {
+    const mockPackageJson = {
+      dependencies: {
+        'some-dependency': '~1.0.0',
+        'another-dependency': '^1.2.3',
+      },
+      devDependencies: {
+        'some-dev-dependency': '~4.5.6',
+        'another-dev-dependency': '^7.8.9',
+      },
+    };
+
+    const expectedPackageJson = {
+      dependencies: {
+        'some-dependency': '1.0.0',
+        'another-dependency': '1.2.3',
+      },
+      devDependencies: {
+        'some-dev-dependency': '4.5.6',
+        'another-dev-dependency': '7.8.9',
+      },
+    };
+
+    // Setup mocks
+    (jsonfile.readFile as jest.Mock).mockImplementation((filePath, callback) => {
+      callback(null, mockPackageJson);
+    });
+
+    (jsonfile.writeFile as jest.Mock).mockImplementation((filePath, data, options, callback) => {
+      callback(null);
+    });
+
+    await removeVersionIcons('path/to/package.json');
+
+    // Verify that writeFile was called with the correct arguments
+    expect(jsonfile.writeFile).toHaveBeenCalledWith(
+      'path/to/package.json',
+      expectedPackageJson,
+      { spaces: 2 },
+      expect.any(Function),
+    );
   });
 });

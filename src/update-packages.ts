@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import * as jsonfile from 'jsonfile';
-import { packageJson } from './model/packagejson.model';
+import { PackageJson } from './model/packagejson.model';
 import { filterDependancies, getAngularMayorVersion, gitSync, loadConfig, loadPackages, npmSync, npxSync } from "./utility";
 
 
@@ -27,7 +27,7 @@ async function stageAndCommitChanges(packageName: string) {
   }
 }
 
-async function updateAngular(keepAngularMayorVersion: boolean, packageJson: packageJson) {
+async function updateAngular(keepAngularMayorVersion: boolean, packageJson: PackageJson) {
   if(keepAngularMayorVersion) {
     const angularVersion = getAngularMayorVersion(packageJson);
     npxSync(["ng", "update", `@angular/cli@${angularVersion}`, `@angular/core@${angularVersion}`]);
@@ -85,8 +85,8 @@ async function npmAuditFix() {
   }
 }
 
-function removeVersionIcons(filepath: string) {
-  jsonfile.readFile(filepath, function(err, packageObj: packageJson) {
+export function removeVersionIcons(filepath: string) {
+  jsonfile.readFile(filepath, function(err, packageObj: PackageJson) {
     if (err) {
       console.error(err);
       return;
@@ -124,13 +124,6 @@ export async function updateAll() {
   
   const packageJson = loadPackages();
   const config = loadConfig();
-
-  if(config.keepAngularMayorVersion){
-    config.ignoreDependencies.push("@angular/cli");
-    config.ignoreDependencies.push("@angular/core");
-    config.ignoreDevDependencies.push("@angular/cli");
-    config.ignoreDevDependencies.push("@angular/core");
-  }
 
   const dependencies = filterDependancies(Object.keys(packageJson.dependencies), config.ignoreDependencies);
   const devDependencies = filterDependancies(Object.keys(packageJson.devDependencies), config.ignoreDevDependencies);

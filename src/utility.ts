@@ -1,6 +1,7 @@
 import * as cp from "child_process";
 import * as fs from 'fs';
-import { packageJson } from "./model/packagejson.model";
+import { PackageJson } from "./model/packagejson.model";
+
 
 export function npmSync(args: string[]) {
   const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
@@ -17,11 +18,22 @@ export function gitSync(args: string[]) {
   return cp.spawnSync(gitCommand, args, { stdio: "inherit", shell: false });
 }
 
-export function loadPackages(): packageJson {
+export function loadPackages(): PackageJson {
   return JSON.parse(fs.readFileSync("package.json", "utf-8"));
 }
 
 export function loadConfig() {
+  const config = loadConfigFile();
+  if(config.keepAngularMayorVersion){
+    config.ignoreDependencies.push("@angular/cli");
+    config.ignoreDependencies.push("@angular/core");
+    config.ignoreDevDependencies.push("@angular/cli");
+    config.ignoreDevDependencies.push("@angular/core");
+  }
+  return config;
+}
+
+export function loadConfigFile(){
   try {
     return JSON.parse(fs.readFileSync('update-config.json', "utf-8"));
   } catch {
@@ -39,7 +51,7 @@ export function filterDependancies(dependencies: string[], igonreDependencies: s
   return dependencies.filter((dep) => !igonreDependencies.includes(dep));
 }
 
-export function getAngularMayorVersion(packageJson: packageJson) {
+export function getAngularMayorVersion(packageJson: PackageJson) {
   const angularVersion = packageJson.dependencies['@angular/core'] || packageJson.devDependencies['@angular/core'];
   if (!angularVersion) {
     return null;
