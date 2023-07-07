@@ -3,8 +3,7 @@
 import * as jsonfile from 'jsonfile';
 import { PackageJson } from './model/packagejson.model';
 import { filterDependancies, getAngularMayorVersion, gitSync, loadConfig, loadPackages, npmSync, npxSync } from "./utility";
-
-
+import {italic, bold} from 'kleur';
 
 /**
 
@@ -17,7 +16,8 @@ import { filterDependancies, getAngularMayorVersion, gitSync, loadConfig, loadPa
  */
 
 async function stageAndCommitChanges(packageName: string) {
-  console.log(`git add / commit: ${packageName}`);
+  console.log(bold().italic(`git add / commit: ${packageName}`))
+  // console.log(chalk.green(`git add / commit: ${packageName}`));
 
   try {
     gitSync(["add", "."]);
@@ -66,7 +66,7 @@ export async function updatePackages(packages: string[], type: string) {
 }
 
 export async function updatePackagesFast(packages: string[]) {
-  console.log("cmd: update Packages fast");
+  console.log(bold("cmd: ") + italic("update Packages fast"));
 
   npxSync(["ng", "update", ...packages]);
 

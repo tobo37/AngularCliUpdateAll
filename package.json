@@ -56,6 +56,7 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "chmodr": "^1.2.0"
+    "chmodr": "^1.2.0",
+    "kleur": "^4.1.5"
   }
 }

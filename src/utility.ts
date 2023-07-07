@@ -1,6 +1,7 @@
 import * as cp from "child_process";
 import * as fs from 'fs';
 import { PackageJson } from "./model/packagejson.model";
+import {yellow} from "kleur";
 
 
 export function npmSync(args: string[]) {
@@ -37,7 +38,7 @@ export function loadConfigFile(){
   try {
     return JSON.parse(fs.readFileSync('update-config.json', "utf-8"));
   } catch {
-    console.log("no config file found, using default config")
+    console.log(yellow("no config file found, using default config"))
     return {
       "keepAngularMayorVersion": true,
       "removeVersioningSymbols": false,
