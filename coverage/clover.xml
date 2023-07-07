@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1688558249123" clover="3.2.0">
-  <project timestamp="1688558249123" name="All files">
-    <metrics statements="107" coveredstatements="94" conditionals="16" coveredconditionals="12" methods="22" coveredmethods="20" elements="145" coveredelements="126" complexity="0" loc="107" ncloc="107" packages="1" files="3" classes="3"/>
+<coverage generated="1688732214944" clover="3.2.0">
+  <project timestamp="1688732214945" name="All files">
+    <metrics statements="110" coveredstatements="97" conditionals="16" coveredconditionals="12" methods="22" coveredmethods="20" elements="148" coveredelements="129" complexity="0" loc="110" ncloc="110" packages="1" files="3" classes="3"/>
     <file name="cli.ts" path="C:\Entwicklung\AngularCliUpdateAll\src\cli.ts">
-      <metrics statements="11" coveredstatements="11" conditionals="1" coveredconditionals="1" methods="4" coveredmethods="3"/>
+      <metrics statements="12" coveredstatements="12" conditionals="1" coveredconditionals="1" methods="4" coveredmethods="3"/>
       <line num="3" count="2" type="stmt"/>
-      <line num="5" count="2" type="stmt"/>
-      <line num="7" count="2" type="stmt"/>
-      <line num="8" count="4" type="cond" truecount="1" falsecount="0"/>
-      <line num="9" count="1" type="stmt"/>
+      <line num="4" count="2" type="stmt"/>
+      <line num="6" count="2" type="stmt"/>
+      <line num="8" count="2" type="stmt"/>
+      <line num="9" count="4" type="cond" truecount="1" falsecount="0"/>
       <line num="10" count="1" type="stmt"/>
-      <line num="12" count="3" type="stmt"/>
-      <line num="15" count="2" type="stmt"/>
+      <line num="11" count="1" type="stmt"/>
+      <line num="13" count="3" type="stmt"/>
       <line num="16" count="2" type="stmt"/>
       <line num="17" count="2" type="stmt"/>
-      <line num="20" count="2" type="stmt"/>
+      <line num="18" count="2" type="stmt"/>
+      <line num="21" count="2" type="stmt"/>
     </file>
     <file name="update-packages.ts" path="C:\Entwicklung\AngularCliUpdateAll\src\update-packages.ts">
-      <metrics statements="61" coveredstatements="49" conditionals="5" coveredconditionals="1" methods="9" coveredmethods="9"/>
+      <metrics statements="62" coveredstatements="50" conditionals="5" coveredconditionals="1" methods="9" coveredmethods="9"/>
       <line num="3" count="1" type="stmt"/>
       <line num="5" count="1" type="stmt"/>
-      <line num="20" count="7" type="stmt"/>
+      <line num="6" count="1" type="stmt"/>
+      <line num="19" count="7" type="stmt"/>
       <line num="22" count="7" type="stmt"/>
       <line num="23" count="7" type="stmt"/>
       <line num="24" count="7" type="stmt"/>
@@ -81,42 +83,43 @@
       <line num="160" count="1" type="stmt"/>
     </file>
     <file name="utility.ts" path="C:\Entwicklung\AngularCliUpdateAll\src\utility.ts">
-      <metrics statements="35" coveredstatements="34" conditionals="10" coveredconditionals="10" methods="9" coveredmethods="8"/>
+      <metrics statements="36" coveredstatements="35" conditionals="10" coveredconditionals="10" methods="9" coveredmethods="8"/>
       <line num="1" count="1" type="stmt"/>
       <line num="2" count="1" type="stmt"/>
-      <line num="6" count="1" type="stmt"/>
-      <line num="7" count="2" type="cond" truecount="2" falsecount="0"/>
-      <line num="8" count="2" type="stmt"/>
-      <line num="11" count="1" type="stmt"/>
-      <line num="12" count="2" type="cond" truecount="2" falsecount="0"/>
-      <line num="13" count="2" type="stmt"/>
-      <line num="16" count="1" type="stmt"/>
-      <line num="17" count="2" type="cond" truecount="2" falsecount="0"/>
-      <line num="18" count="2" type="stmt"/>
-      <line num="21" count="1" type="stmt"/>
-      <line num="22" count="0" type="stmt"/>
-      <line num="25" count="1" type="stmt"/>
+      <line num="4" count="1" type="stmt"/>
+      <line num="7" count="1" type="stmt"/>
+      <line num="8" count="2" type="cond" truecount="2" falsecount="0"/>
+      <line num="9" count="2" type="stmt"/>
+      <line num="12" count="1" type="stmt"/>
+      <line num="13" count="2" type="cond" truecount="2" falsecount="0"/>
+      <line num="14" count="2" type="stmt"/>
+      <line num="17" count="1" type="stmt"/>
+      <line num="18" count="2" type="cond" truecount="2" falsecount="0"/>
+      <line num="19" count="2" type="stmt"/>
+      <line num="22" count="1" type="stmt"/>
+      <line num="23" count="0" type="stmt"/>
       <line num="26" count="1" type="stmt"/>
-      <line num="27" count="1" type="cond" truecount="1" falsecount="0"/>
-      <line num="28" count="1" type="stmt"/>
+      <line num="27" count="1" type="stmt"/>
+      <line num="28" count="1" type="cond" truecount="1" falsecount="0"/>
       <line num="29" count="1" type="stmt"/>
       <line num="30" count="1" type="stmt"/>
       <line num="31" count="1" type="stmt"/>
-      <line num="33" count="1" type="stmt"/>
-      <line num="36" count="1" type="stmt"/>
-      <line num="37" count="3" type="stmt"/>
+      <line num="32" count="1" type="stmt"/>
+      <line num="34" count="1" type="stmt"/>
+      <line num="37" count="1" type="stmt"/>
       <line num="38" count="3" type="stmt"/>
-      <line num="40" count="2" type="stmt"/>
+      <line num="39" count="3" type="stmt"/>
       <line num="41" count="2" type="stmt"/>
-      <line num="50" count="1" type="stmt"/>
-      <line num="51" count="9" type="stmt"/>
-      <line num="54" count="1" type="stmt"/>
-      <line num="55" count="3" type="cond" truecount="2" falsecount="0"/>
-      <line num="56" count="3" type="cond" truecount="1" falsecount="0"/>
-      <line num="57" count="1" type="stmt"/>
-      <line num="59" count="2" type="stmt"/>
+      <line num="42" count="2" type="stmt"/>
+      <line num="51" count="1" type="stmt"/>
+      <line num="52" count="9" type="stmt"/>
+      <line num="55" count="1" type="stmt"/>
+      <line num="56" count="3" type="cond" truecount="2" falsecount="0"/>
+      <line num="57" count="3" type="cond" truecount="1" falsecount="0"/>
+      <line num="58" count="1" type="stmt"/>
       <line num="60" count="2" type="stmt"/>
       <line num="61" count="2" type="stmt"/>
+      <line num="62" count="2" type="stmt"/>
     </file>
   </project>
 </coverage>

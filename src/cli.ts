@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { updateAll } from "./update-packages"
+import { bold, green, underline } from "kleur"
 
 const [,, ...args] = process.argv
 
@@ -14,7 +15,7 @@ export function handleArgs(args: string[]) {
 
 export function init(args: string[]){
     handleArgs(args)
-    updateAll().then(() => console.log("update complete")).catch((error) => console.error(error))
+    updateAll().then(() => console.log(green().underline().bold("update complete"))).catch((error) => console.error(error))
 }
 
 init(args)
