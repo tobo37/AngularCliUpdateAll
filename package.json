@@ -12,6 +12,7 @@
     "prelink": "npm run build && npm run copy-files",
     "prepublishOnly": "npm run build && npm run copy-files && npm run lint && npm run test && cd dist && npm pack"
   },
+  "type": "module",
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",

@@ -6,7 +6,7 @@ import { promisify } from 'util';
 
 const exec = promisify(childProcessExec);
 
-xdescribe('Integration Test: update-them-all', () => {
+describe('Integration Test: update-them-all', () => {
   const testEnvironmentPath = path.join(__dirname, 'test-env');
 
   beforeEach(async () => {
@@ -14,16 +14,16 @@ xdescribe('Integration Test: update-them-all', () => {
     if (fs.existsSync(testEnvironmentPath)) {
       await fs.removeSync(testEnvironmentPath);
     }
-    await exec("cd tests && npx npx @angular/cli@16.0.0 new test-env --skip-git --skip-tests");
-    await exec("cd dist && npm link update-them-all");
-    // await exec("cd tests/test-env && node ../../src/postinstall-script.js");
+    await exec("cd tests && npx @angular/cli@16.0.0 new test-env --skip-git --skip-tests");
+    // await exec("npm run build");
+    // await exec("cd dist && npm link update-them-all");
 
   });
 
   afterEach(async () => {
     // Clean up the test-environment directory
     await fs.removeSync(testEnvironmentPath);
-    await exec("cd dist && npm unlink update-them-all");
+    // await exec("cd dist && npm unlink update-them-all");
   });
 
   it('should update all dependencies to the latest version', async () => {
@@ -34,7 +34,7 @@ xdescribe('Integration Test: update-them-all', () => {
     let atLeastOneIsBiggerDevDep = false;
 
     // Run the library
-    await exec('npx update-them-all');
+    await exec('cd tests && cd test-env && node ../../src/cli.ts');
     const updatedPackageJson = JSON.parse(fs.readFileSync(testPathsPackageJson, 'utf-8'));
 
     Object.keys(oldPackageJson.dependencies).forEach((dependency) => {
