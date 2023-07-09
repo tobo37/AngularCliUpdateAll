@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { updateAll } from "./update-packages"
-import { bold, green, underline } from "kleur"
+import { green } from "kleur";
+import { updateAll } from "./update-packages";
 
 const [,, ...args] = process.argv
 

@@ -2,7 +2,10 @@
   "name": "update-them-all",
   "version": "1.1.0-rc.3",
   "description": "A package to update Angular, dependencies, and devDependencies",
-  "main": "cli.js",
+  "main": "dist/cli.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "jest --coverage",
     "link": "npm link && npm run postinstall",
@@ -10,8 +13,10 @@
     "copy-files": "ncp package.json dist/package.json && ncp README.md dist/README.md",
     "lint": "eslint . --ext .ts",
     "prelink": "npm run build && npm run copy-files",
+    "testPrepare": "npm run build && npm run copy-files && cd dist && npm pack",
     "prepublishOnly": "npm run build && npm run copy-files && npm run lint && npm run test && cd dist && npm pack"
   },
+  "type": "module",
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",

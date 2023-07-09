@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import * as jsonfile from 'jsonfile';
+import { bold, italic } from 'kleur';
 import { PackageJson } from './model/packagejson.model';
 import { filterDependancies, getAngularMayorVersion, gitSync, loadConfig, loadPackages, npmSync, npxSync } from "./utility";
-import {italic, bold} from 'kleur';
 
 /**
 
@@ -17,8 +17,6 @@ import {italic, bold} from 'kleur';
 
 async function stageAndCommitChanges(packageName: string) {
   console.log(bold().italic(`git add / commit: ${packageName}`))
-  // console.log(chalk.green(`git add / commit: ${packageName}`));
-
   try {
     gitSync(["add", "."]);
     gitSync(["diff", "--cached", "--quiet"]);
