@@ -1,7 +1,7 @@
 import * as cp from "child_process";
 import * as fs from 'fs';
+import { yellow } from "kleur";
 import { PackageJson } from "./model/packagejson.model";
-import {yellow} from "kleur";
 
 
 export function npmSync(args: string[]) {

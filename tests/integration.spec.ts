@@ -14,16 +14,17 @@ describe('Integration Test: update-them-all', () => {
     if (fs.existsSync(testEnvironmentPath)) {
       await fs.removeSync(testEnvironmentPath);
     }
+    await exec("npm run prepublishOnly");
     await exec("cd tests && npx @angular/cli@16.0.0 new test-env --skip-git --skip-tests");
-    await exec("npm run testPrepare");
-    await exec("npm install -g ./dist/" + getPackedFileName());
+    await exec("echo dir")
+    await exec("cd tests && cd test-env && npm install ../../dist/" + getPackedFileName());
 
   });
 
   afterEach(async () => {
     // Clean up the test-environment directory
     await fs.removeSync(testEnvironmentPath);
-    await exec("npm uninstall -g update-them-all")
+    // await exec("npm uninstall -g update-them-all")
   });
 
   it('should update all dependencies to the latest version', async () => {
@@ -79,7 +80,7 @@ function isVersionGreaterThanOrEqual(updatedVersion: string, oldVersion: string)
 
 function isVersionDifferent(updatedVersion: string, oldVersion: string) {
   return (
-    semver.eq(updatedVersion.replace(/[\^~]/g, ''), oldVersion.replace(/[\^~]/g, ''))
+    !semver.eq(updatedVersion.replace(/[\^~]/g, ''), oldVersion.replace(/[\^~]/g, ''))
   );
 }
 

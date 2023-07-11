@@ -1,10 +1,12 @@
 {
   "name": "update-them-all",
-  "version": "1.1.0-rc.3",
+  "version": "1.1.0",
   "description": "A package to update Angular, dependencies, and devDependencies",
-  "main": "dist/cli.js",
+  "main": "index.js",
   "files": [
-    "dist"
+    "*.js",
+    "*.d.ts",
+    "model/**"
   ],
   "scripts": {
     "test": "jest --coverage",
@@ -13,10 +15,9 @@
     "copy-files": "ncp package.json dist/package.json && ncp README.md dist/README.md",
     "lint": "eslint . --ext .ts",
     "prelink": "npm run build && npm run copy-files",
-    "testPrepare": "npm run build && npm run copy-files && cd dist && npm pack",
-    "prepublishOnly": "npm run build && npm run copy-files && npm run lint && npm run test && cd dist && npm pack"
+    "prepublishOnly": "npm run build && npm run copy-files && cd dist && npm pack"
   },
-  "type": "module",
+  "type": "commonjs",
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
@@ -24,7 +25,7 @@
     "testTimeout": 1800000
   },
   "bin": {
-    "update-them-all": "./src/cli.js"
+    "update-them-all": "./cli.js"
   },
   "repository": {
     "type": "git",
@@ -62,6 +63,7 @@
   },
   "dependencies": {
     "chmodr": "^1.2.0",
+    "jsonfile": "^6.1.0",
     "kleur": "^4.1.5"
   }
 }

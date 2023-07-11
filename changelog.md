@@ -6,8 +6,9 @@
     - ignoreDevDependencies
 - switch to typescript
 - remove postinstall (dose not work after npm 6) -> add a script. Not implement now
-- more unit tests, broken integration test
+- more unit tests, integration test
 - sonarqube fixes
+- add some colors in the console.log
 
 # no release
 - update integrationtests
