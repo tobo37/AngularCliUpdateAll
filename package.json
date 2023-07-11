@@ -62,7 +62,6 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "chmodr": "^1.2.0",
     "jsonfile": "^6.1.0",
     "kleur": "^4.1.5"
   }
