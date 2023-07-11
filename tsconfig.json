@@ -2,11 +2,12 @@
     "compilerOptions": {
       "outDir": "./dist",
       "allowJs": true,
-      "target": "ES6",
+      "target": "ES2020",
       "module": "commonjs",
       "declaration": true,
       "strict": true,
-      "esModuleInterop": true
+      "esModuleInterop": true,
+      "rootDir": "./src",
     },
     "include": ["./src/**/*", "package.json"],
     "exclude": ["node_modules", "**/.spec./*"]
