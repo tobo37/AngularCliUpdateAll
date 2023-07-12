@@ -1,6 +1,6 @@
-import { updateAll, updatePackages, updatePackagesFast, removeVersionIcons } from '../src/update-packages';
-import * as utils from '../src/utility';
 import jsonfile from 'jsonfile';
+import { removeVersioningSymbols, updateAll, updatePackages, updatePackagesFast } from '../src/update-packages';
+import * as utils from '../src/utility';
 
 const packageJson = {
     dependencies: {
@@ -28,7 +28,7 @@ jest.mock('../src/utility', () => {
     npmSync: jest.fn(),
     npxSync: jest.fn(),
     gitSync: jest.fn(),
-    filterDependancies: jest.fn((dependencies, ignoreDependencies) => dependencies),
+    filterDependancies: jest.fn((dependencies) => dependencies),
     loadPackages: jest.fn(() => packageJson),
     loadConfig: jest.fn(() => configJson),
   };
@@ -122,15 +122,15 @@ describe('removeVersionIcons', () => {
     };
 
     // Setup mocks
-    (jsonfile.readFile as jest.Mock).mockImplementation((filePath, callback) => {
+    (jsonfile.readFile as jest.Mock).mockImplementation((_filePath, callback) => {
       callback(null, mockPackageJson);
     });
 
-    (jsonfile.writeFile as jest.Mock).mockImplementation((filePath, data, options, callback) => {
+    (jsonfile.writeFile as jest.Mock).mockImplementation((_filePath, _data, _options, callback) => {
       callback(null);
     });
 
-    await removeVersionIcons('path/to/package.json');
+    await removeVersioningSymbols('path/to/package.json');
 
     // Verify that writeFile was called with the correct arguments
     expect(jsonfile.writeFile).toHaveBeenCalledWith(

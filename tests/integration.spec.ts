@@ -3,31 +3,31 @@ import fs from 'fs-extra';
 import * as path from 'path';
 import semver from 'semver';
 import { promisify } from 'util';
+import { removeVersioningSymbols } from '../src/update-packages';
 
 const exec = promisify(childProcessExec);
 
 describe('Integration Test: update-them-all', () => {
   const testEnvironmentPath = path.join(__dirname, 'test-env');
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     // Clean up the test-environment directory if it exists
     if (fs.existsSync(testEnvironmentPath)) {
       await fs.removeSync(testEnvironmentPath);
     }
     await exec("npm run prepublishOnly");
-    await exec("cd tests && npx @angular/cli@16.0.0 new test-env --skip-git --skip-tests");
-    await exec("echo dir")
+    await exec("cd tests && npx @angular/cli@15.0.0 new test-env --skip-git --skip-tests --skip-install --defaults=true");
+    removeVersioningSymbols(path.join(testEnvironmentPath, 'package.json')); // downgrade from 15.9.9 to 15.0.0
     await exec("cd tests && cd test-env && npm install --save-dev ../../dist/" + getPackedFileName());
 
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     // Clean up the test-environment directory
-    // await fs.removeSync(testEnvironmentPath);
-    // await exec("npm uninstall -g update-them-all")
+    await fs.removeSync(testEnvironmentPath);
   });
 
-  it('should update all dependencies to the latest version', async () => {
+  it('should update all dependencies to the latest version but stay on Angular Major', async () => {
     const testPathsPackageJson = path.join(testEnvironmentPath, 'package.json');
     const oldPackageJson = JSON.parse(fs.readFileSync(testPathsPackageJson, 'utf-8'));
 
@@ -59,9 +59,57 @@ describe('Integration Test: update-them-all', () => {
       
     });
 
-    // expect(atLeastOneIsBiggerDep).toBeTruthy();
-    // expect(atLeastOneIsBiggerDevDep).toBeTruthy();
-    expect(isAngularVersionGreater).toBeTruthy();
+    expect(atLeastOneIsBiggerDep).toBeTruthy();
+    expect(atLeastOneIsBiggerDevDep).toBeTruthy();
+    expect(isAngularVersionGreater(updatedPackageJson.devDependencies, oldPackageJson.devDependencies)).toBeTruthy();
+  });
+
+  it('should update all dependencies to the latest version', async () => {
+    // Copy config & Change the keepAngularMayorVersion to false
+    const srcPath = path.resolve(__dirname, '../src/config/update-config.json');
+    const destPath = path.resolve(testEnvironmentPath, 'update-config.json');
+    
+    const fileData = fs.readFileSync(srcPath, 'utf-8');
+    const jsonData = JSON.parse(fileData);
+    jsonData.keepAngularMayorVersion = false;
+    jsonData.removeVersioningSymbols = true;
+    const newFileData = JSON.stringify(jsonData, null, 2);
+    fs.writeFileSync(destPath, newFileData);
+
+    const testPathsPackageJson = path.join(testEnvironmentPath, 'package.json');
+    const oldPackageJson = JSON.parse(fs.readFileSync(testPathsPackageJson, 'utf-8'));
+
+    let atLeastOneIsBiggerDep = false;
+    let atLeastOneIsBiggerDevDep = false;
+
+    // Run the library
+    await exec('cd tests && cd test-env && npx update-them-all');
+    const updatedPackageJson = JSON.parse(fs.readFileSync(testPathsPackageJson, 'utf-8'));
+
+    Object.keys(oldPackageJson.dependencies).forEach((dependency) => {
+      const oldDep = oldPackageJson.dependencies[dependency];
+      const updatedDep = updatedPackageJson.dependencies[dependency];
+      if (isVersionDifferent(updatedDep, oldDep)) {
+        atLeastOneIsBiggerDep = true;
+      }
+      expect(isVersionGreaterThanOrEqual(updatedDep, oldDep)).toBeTruthy();
+    });
+
+    Object.keys(oldPackageJson.devDependencies).forEach((dependency) => {
+      if(dependency !== "update-them-all") {
+        const oldDep = oldPackageJson.devDependencies[dependency];
+        const updatedDep = updatedPackageJson.devDependencies[dependency];
+        if (isVersionDifferent(updatedDep, oldDep)) {
+          atLeastOneIsBiggerDevDep = true;
+        }
+        expect(isVersionGreaterThanOrEqual(updatedDep, oldDep)).toBeTruthy();
+      }
+      
+    });
+
+    expect(atLeastOneIsBiggerDep).toBeTruthy();
+    expect(atLeastOneIsBiggerDevDep).toBeTruthy();
+    expect(isAngularVersionGreater(updatedPackageJson.devDependencies, oldPackageJson.devDependencies)).toBeTruthy();
   });
 });
 

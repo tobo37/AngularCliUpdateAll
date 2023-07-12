@@ -23,13 +23,19 @@ export function loadPackages(): PackageJson {
   return JSON.parse(fs.readFileSync("package.json", "utf-8"));
 }
 
-export function loadConfig() {
+export function loadConfig(packageJson: PackageJson) {
   const config = loadConfigFile();
   if(config.keepAngularMayorVersion){
-    config.ignoreDependencies.push("@angular/cli");
-    config.ignoreDependencies.push("@angular/core");
-    config.ignoreDevDependencies.push("@angular/cli");
-    config.ignoreDevDependencies.push("@angular/core");
+    Object.keys(packageJson.dependencies).forEach((dep) => {
+      if(dep.includes("@angular")){
+        config.ignoreDependencies.push(dep);
+      }
+    });
+    Object.keys(packageJson.devDependencies).forEach((dep) => {
+      if(dep.includes("@angular")){
+        config.ignoreDevDependencies.push(dep);
+      }
+    });
   }
   return config;
 }
@@ -38,7 +44,16 @@ export function loadConfigFile(){
   try {
     return JSON.parse(fs.readFileSync('update-config.json', "utf-8"));
   } catch {
-    console.log(yellow("no config file found, using default config"))
+    console.log(yellow(`Configuration not found. We're using a default configuration instead. 
+    If you want to create a configuration, create a file named "update-config.json" in the root directory of your project with the following content:
+    
+    {
+      "keepAngularMayorVersion": true,
+      "removeVersioningSymbols": false,
+      "ignoreDependencies": [],
+      "ignoreDevDependencies": []
+    }
+    `))
     return {
       "keepAngularMayorVersion": true,
       "removeVersioningSymbols": false,

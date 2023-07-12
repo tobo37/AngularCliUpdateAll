@@ -1,3 +1,9 @@
+# 1.1.2
+    fix:
+        - stay in version for all Angular dep/dev
+        - improve Integration test
+
+
 # 1.1.0
 - add update-config
     - keepAngularMayorVersion default true
