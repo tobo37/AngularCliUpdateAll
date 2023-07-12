@@ -83,7 +83,7 @@ async function npmAuditFix() {
   }
 }
 
-export function removeVersionIcons(filepath: string) {
+export function removeVersioningSymbols(filepath: string) {
   jsonfile.readFile(filepath, function(err, packageObj: PackageJson) {
     if (err) {
       console.error(err);
@@ -121,7 +121,7 @@ export function removeVersionIcons(filepath: string) {
 export async function updateAll() {
   
   const packageJson = loadPackages();
-  const config = loadConfig();
+  const config = loadConfig(packageJson);
 
   const dependencies = filterDependancies(Object.keys(packageJson.dependencies), config.ignoreDependencies);
   const devDependencies = filterDependancies(Object.keys(packageJson.devDependencies), config.ignoreDevDependencies);
@@ -145,8 +145,8 @@ export async function updateAll() {
     await updatePackages(devDependencies, "devDependencies");
   }
 
-  if(config.removeVersionIcons) {
-    removeVersionIcons("package.json");
+  if(config.removeVersioningSymbols) {
+    removeVersioningSymbols("package.json");
   }
 
   await npmAuditFix();

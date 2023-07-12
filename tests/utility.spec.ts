@@ -1,8 +1,8 @@
-import * as utils from '../src/utility';
+import cp from 'child_process';
 import * as fs from 'fs';
+import * as utils from '../src/utility';
 
 jest.mock('fs');
-import cp from 'child_process';
 jest.mock('child_process');
 
 describe('filterDependancies', () => {
@@ -80,7 +80,7 @@ describe('loadConfig', () => {
 
       spy.mockReturnValue({mockConfig });
   
-      const config = utils.loadConfig();
+      const config = utils.loadConfig({dependencies: {"@angular/cli": "^0.0.0", "@angular/core": "~0.0.0"}, devDependencies: {"@angular/cli": "0.0.0", "@angular/core": "^0.0.0"}});
 
       expect(config.ignoreDependencies).toContain("@angular/cli");
       expect(config.ignoreDependencies).toContain("@angular/core");
@@ -97,7 +97,7 @@ describe('loadConfig', () => {
       };
       spy.mockReturnValue({mockConfig});
 
-      const config = utils.loadConfig();
+      const config = utils.loadConfig({dependencies: {"@angular/cli": "^0.0.0", "@angular/core": "~0.0.0"}, devDependencies: {"@angular/cli": "0.0.0", "@angular/core": "^0.0.0"}});
   
       expect(config.ignoreDependencies).not.toContain("@angular/cli");
       expect(config.ignoreDependencies).not.toContain("@angular/core");

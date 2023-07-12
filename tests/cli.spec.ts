@@ -1,5 +1,5 @@
+import { handleArgs } from "../src/cli";
 import { updateAll } from "../src/update-packages";
-import {handleArgs} from "../src/cli";
 
 // Mocking updateAll function from update-packages module
 jest.mock('../src/update-packages', () => {
@@ -19,8 +19,6 @@ describe('cli tests', () => {
   });
   it('should call init when the cli.ts module is loaded', async () => {
     await jest.isolateModules(async () => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const cli = require('../src/cli');
       expect(updateAll).toHaveBeenCalled();
     });
   });
