@@ -1,13 +1,13 @@
 #!/usr/bin/env node
-
-import { green } from "kleur";
 import { updateAll } from "./update-packages";
+import { Output } from "./console-output";
+import { TextEn } from "./model/text-en";
 
 const [,, ...args] = process.argv
 
 export function handleArgs(args: string[]) {
     if(args.length > 0) {
-      console.log("Invalid arguments - we don't take any arguments (yet)")
+      Output.simple(TextEn.CLI_INVALID_ARGS)
       return false;
     }
     return true;
@@ -15,7 +15,7 @@ export function handleArgs(args: string[]) {
 
 export function init(args: string[]){
     handleArgs(args)
-    updateAll().then(() => console.log(green().underline().bold("update complete"))).catch((error) => console.error(error))
+    updateAll().then(() => Output.greenBoldUnderline(TextEn.CLI_COMPLETE)).catch((error) => Output.error(error))
 }
 
 init(args)
