@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import * as jsonfile from 'jsonfile';
+import * as fs from 'fs';
 import { PackageJson } from './model/packagejson.model';
 import { filterDependancies, getAngularMayorVersion, gitSync, loadConfig, loadPackages, npmSync, npxSync } from "./utility";
 import { Output, OutputCustom } from './console-output';
@@ -69,11 +69,7 @@ async function npmAuditFix() {
 }
 
 export function removeVersioningSymbols(filepath: string) {
-  jsonfile.readFile(filepath, function(err, packageObj: PackageJson) {
-    if (err) {
-      Output.error(err.message);
-      return;
-    }
+  const  packageObj = JSON.parse(fs.readFileSync(filepath, "utf-8"));
 
     const dependencies = packageObj.dependencies;
     const devDependencies = packageObj.devDependencies;
@@ -89,12 +85,12 @@ export function removeVersioningSymbols(filepath: string) {
       devDependencies[dep] = devDependencies[dep].replace(/[~^]/g, '');
     }
 
-    jsonfile.writeFile(filepath, packageObj, { spaces: 2 }, function (err) {
+    fs.writeFile(filepath, packageObj, function (err) {
       if (err) {
         Output.error(err.message);
       }
     });
-  });
+
 }
 
 /**
