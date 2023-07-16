@@ -68,30 +68,32 @@ async function npmAuditFix() {
   }
 }
 
+// This function is used to remove the versioning symbols (~ and ^) from the dependencies and devDependencies in a package.json file.
+
 export function removeVersioningSymbols(filepath: string) {
+  // Read the package.json file and parse it into a JavaScript object.
   const  packageObj = JSON.parse(fs.readFileSync(filepath, "utf-8"));
 
-    const dependencies = packageObj.dependencies;
-    const devDependencies = packageObj.devDependencies;
+  // Extract the dependencies and devDependencies objects from the package.json object.
+  const dependencies = packageObj.dependencies;
+  const devDependencies = packageObj.devDependencies;
 
-    // Modify dependencies
-    for (const dep in dependencies) {
-      dependencies[dep] = dependencies[dep].replace(/[~^]/g, '');
-    }
+  // Iterate over each dependency in the dependencies object.
+  for (const dep in dependencies) {
+    // Replace any instance of ~ or ^ in the version string with an empty string, effectively removing them.
+    dependencies[dep] = dependencies[dep].replace(/[~^]/g, '');
+  }
 
-    // Modify devDependencies
-    for (const dep in devDependencies) {
-      // Remove symbols
-      devDependencies[dep] = devDependencies[dep].replace(/[~^]/g, '');
-    }
+  // Iterate over each dependency in the devDependencies object.
+  for (const dep in devDependencies) {
+    // Replace any instance of ~ or ^ in the version string with an empty string, effectively removing them.
+    devDependencies[dep] = devDependencies[dep].replace(/[~^]/g, '');
+  }
 
-    fs.writeFile(filepath, packageObj, function (err) {
-      if (err) {
-        Output.error(err.message);
-      }
-    });
-
+  // Write the modified package.json object back to the file.
+  fs.writeFileSync(filepath, JSON.stringify(packageObj, null, 2));
 }
+
 
 /**
 

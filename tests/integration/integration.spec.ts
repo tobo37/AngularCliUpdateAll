@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import * as path from 'path';
 import semver from 'semver';
 import { promisify } from 'util';
-import { removeVersioningSymbols } from '../src/update-packages';
+import { removeVersioningSymbols } from '../../src/update-packages';
 
 const exec = promisify(childProcessExec);
 
@@ -16,9 +16,9 @@ describe('Integration Test: update-them-all', () => {
       await fs.removeSync(testEnvironmentPath);
     }
     await exec("npm run prepublishOnly");
-    await exec("cd tests && npx @angular/cli@15.0.0 new test-env --skip-git --skip-tests --skip-install --defaults=true");
+    await exec("cd tests && cd integration && npx @angular/cli@15.0.0 new test-env --skip-git --skip-install --skip-tests --defaults=true");
     removeVersioningSymbols(path.join(testEnvironmentPath, 'package.json')); // downgrade from 15.9.9 to 15.0.0
-    await exec("cd tests && cd test-env && npm install --save-dev ../../dist/" + getPackedFileName());
+    await exec("cd tests && cd integration && cd test-env && npm install --save-dev ../../../dist/" + getPackedFileName());
 
   });
 
@@ -35,7 +35,7 @@ describe('Integration Test: update-them-all', () => {
     let atLeastOneIsBiggerDevDep = false;
 
     // Run the library
-    await exec('cd tests && cd test-env && npx update-them-all');
+    await exec('cd tests && cd integration && cd test-env && npx update-them-all');
     const updatedPackageJson = JSON.parse(fs.readFileSync(testPathsPackageJson, 'utf-8'));
 
     Object.keys(oldPackageJson.dependencies).forEach((dependency) => {
@@ -66,7 +66,7 @@ describe('Integration Test: update-them-all', () => {
 
   it('should update all dependencies to the latest version', async () => {
     // Copy config & Change the keepAngularMayorVersion to false
-    const srcPath = path.resolve(__dirname, '../src/config/update-config.json');
+    const srcPath = path.resolve(__dirname, '../../src/config/update-config.json');
     const destPath = path.resolve(testEnvironmentPath, 'update-config.json');
     
     const fileData = fs.readFileSync(srcPath, 'utf-8');
@@ -83,7 +83,7 @@ describe('Integration Test: update-them-all', () => {
     let atLeastOneIsBiggerDevDep = false;
 
     // Run the library
-    await exec('cd tests && cd test-env && npx update-them-all');
+    await exec('cd tests && cd integration && cd test-env && npx update-them-all');
     const updatedPackageJson = JSON.parse(fs.readFileSync(testPathsPackageJson, 'utf-8'));
 
     Object.keys(oldPackageJson.dependencies).forEach((dependency) => {
