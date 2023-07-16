@@ -1,22 +1,14 @@
 #!/usr/bin/env node
 
-import * as jsonfile from 'jsonfile';
-import { bold, italic } from 'kleur';
+import * as fs from 'fs';
 import { PackageJson } from './model/packagejson.model';
 import { filterDependancies, getAngularMayorVersion, gitSync, loadConfig, loadPackages, npmSync, npxSync } from "./utility";
+import { Output, OutputCustom } from './console-output';
+import { TextEn } from './model/text-en';
 
-/**
 
- * Add and commit changes using Git.
-
- *
-
- * @param {string} packageName - The name of the package to include in the commit message.
-
- */
-
-async function stageAndCommitChanges(packageName: string) {
-  console.log(bold().italic(`git add / commit: ${packageName}`))
+export async function stageAndCommitChanges(packageName: string) {
+  OutputCustom.gitAdd(packageName);
   try {
     gitSync(["add", "."]);
     gitSync(["diff", "--cached", "--quiet"]);
@@ -25,7 +17,7 @@ async function stageAndCommitChanges(packageName: string) {
   }
 }
 
-async function updateAngular(keepAngularMayorVersion: boolean, packageJson: PackageJson) {
+export async function updateAngular(keepAngularMayorVersion: boolean, packageJson: PackageJson) {
   if(keepAngularMayorVersion) {
     const angularVersion = getAngularMayorVersion(packageJson);
     npxSync(["ng", "update", `@angular/cli@${angularVersion}`, `@angular/core@${angularVersion}`]);
@@ -35,26 +27,16 @@ async function updateAngular(keepAngularMayorVersion: boolean, packageJson: Pack
   await stageAndCommitChanges("@angular/cli @angular/core");
 }
 
-/**
-
- * Update a list of packages.
-
- *
-
- * @param {Array<string>} packages - An array of package names.
-
- * @param {string} type - The type of packages ('dependencies' or 'devDependencies').
-
- */
-
 export async function updatePackages(packages: string[], type: string) {
-  console.log(`Updating ${type}:`);
+  OutputCustom.updatingNext(type);
 
   for (const packageName of packages) {
     try {
       npxSync(["ng", "update", packageName, "--allow-dirty"]);
     } catch (error) {
-      console.error(`Error updating ${packageName}: ${error}`);
+      if (error instanceof Error) {
+        OutputCustom.updatePackageError(packageName, error);        
+      }
     }
   }
 
@@ -64,7 +46,7 @@ export async function updatePackages(packages: string[], type: string) {
 }
 
 export async function updatePackagesFast(packages: string[]) {
-  console.log(bold("cmd: ") + italic("update Packages fast"));
+  Output.boldItalic(TextEn.UP_STARTING_UPDATING_FAST)
 
   npxSync(["ng", "update", ...packages]);
 
@@ -73,44 +55,45 @@ export async function updatePackagesFast(packages: string[]) {
 }
 
 async function npmAuditFix() {
-  console.log("npm audit fix");
+  Output.boldItalic(TextEn.UP_STARTING_NPM_AUDIT);
 
   try {
     npmSync(["audit", "fix"])
     await stageAndCommitChanges("npm audit fix");
   } catch (error) {
-    console.error("Error running npm audit fix:", error);
+    if (error instanceof Error) {
+      OutputCustom.npmAuditError(error);
+    }
+    
   }
 }
 
+// This function is used to remove the versioning symbols (~ and ^) from the dependencies and devDependencies in a package.json file.
+
 export function removeVersioningSymbols(filepath: string) {
-  jsonfile.readFile(filepath, function(err, packageObj: PackageJson) {
-    if (err) {
-      console.error(err);
-      return;
-    }
+  // Read the package.json file and parse it into a JavaScript object.
+  const  packageObj = JSON.parse(fs.readFileSync(filepath, "utf-8"));
 
-    const dependencies = packageObj.dependencies;
-    const devDependencies = packageObj.devDependencies;
+  // Extract the dependencies and devDependencies objects from the package.json object.
+  const dependencies = packageObj.dependencies;
+  const devDependencies = packageObj.devDependencies;
 
-    // Modify dependencies
-    for (const dep in dependencies) {
-      dependencies[dep] = dependencies[dep].replace(/[~^]/g, '');
-    }
+  // Iterate over each dependency in the dependencies object.
+  for (const dep in dependencies) {
+    // Replace any instance of ~ or ^ in the version string with an empty string, effectively removing them.
+    dependencies[dep] = dependencies[dep].replace(/[~^]/g, '');
+  }
 
-    // Modify devDependencies
-    for (const dep in devDependencies) {
-      // Remove symbols
-      devDependencies[dep] = devDependencies[dep].replace(/[~^]/g, '');
-    }
+  // Iterate over each dependency in the devDependencies object.
+  for (const dep in devDependencies) {
+    // Replace any instance of ~ or ^ in the version string with an empty string, effectively removing them.
+    devDependencies[dep] = devDependencies[dep].replace(/[~^]/g, '');
+  }
 
-    jsonfile.writeFile(filepath, packageObj, { spaces: 2 }, function (err) {
-      if (err) {
-        console.error(err);
-      }
-    });
-  });
+  // Write the modified package.json object back to the file.
+  fs.writeFileSync(filepath, JSON.stringify(packageObj, null, 2));
 }
+
 
 /**
 
@@ -130,7 +113,7 @@ export async function updateAll() {
   try {
     await updatePackagesFast(dependencies);
   } catch {
-    console.log("All dependencies at once is not possible. Try one at a time.");
+    Output.yellow(TextEn.UP_ERROR_UPDATE_FAST);
 
     await updatePackages(dependencies, "dependencies");
   }
@@ -138,10 +121,7 @@ export async function updateAll() {
   try {
     await updatePackagesFast(devDependencies);
   } catch {
-    console.log(
-      "All dependencies at once is not possible. Try one at a time."
-    );
-
+    Output.yellow(TextEn.UP_ERROR_UPDATE_FAST);
     await updatePackages(devDependencies, "devDependencies");
   }
 

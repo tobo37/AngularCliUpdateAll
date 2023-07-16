@@ -11,6 +11,8 @@
   ],
   "scripts": {
     "test": "jest --coverage",
+    "test:unit": "jest tests/unit",
+    "test:integration": "jest tests/integration",
     "link": "npm link && npm run postinstall",
     "build": "tsc",
     "prebuild": "rimraf dist",
@@ -28,7 +30,7 @@
     "collectCoverage": true
   },
   "bin": {
-    "update-them-all": "./cli.js"
+    "update-them-all": "./run.js"
   },
   "repository": {
     "type": "git",
@@ -38,6 +40,7 @@
     "angular",
     "npm",
     "cli",
+    "auto",
     "updater",
     "update",
     "package"
@@ -66,7 +69,6 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "jsonfile": "^6.1.0",
     "kleur": "^4.1.5"
   }
 }

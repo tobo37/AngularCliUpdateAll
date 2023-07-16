@@ -1,6 +1,7 @@
 import cp from 'child_process';
 import * as fs from 'fs';
-import * as utils from '../src/utility';
+import * as utils from '../../src/utility';
+import { PackageJson } from '../../src/model/packagejson.model';
 
 jest.mock('fs');
 jest.mock('child_process');
@@ -60,14 +61,14 @@ describe('loadConfigFile', () => {
 });
 
 describe('loadConfig', () => {
-    let spy: jest.SpyInstance;
+    let spyLoadConfigFile: jest.SpyInstance;
 
   beforeEach(() => {
-    spy = jest.spyOn(utils, 'loadConfigFile');
+    spyLoadConfigFile = jest.spyOn(utils, 'loadConfigFile');
   });
 
   afterEach(() => {
-    spy.mockRestore();
+    spyLoadConfigFile.mockRestore();
   });
 
     it('should add angular dependencies to ignore lists when keepAngularMayorVersion is true', () => {
@@ -78,7 +79,7 @@ describe('loadConfig', () => {
         ignoreDevDependencies: [],
       };
 
-      spy.mockReturnValue({mockConfig });
+      spyLoadConfigFile.mockReturnValue({mockConfig });
   
       const config = utils.loadConfig({dependencies: {"@angular/cli": "^0.0.0", "@angular/core": "~0.0.0"}, devDependencies: {"@angular/cli": "0.0.0", "@angular/core": "^0.0.0"}});
 
@@ -95,7 +96,7 @@ describe('loadConfig', () => {
         ignoreDependencies: [],
         ignoreDevDependencies: [],
       };
-      spy.mockReturnValue({mockConfig});
+      spyLoadConfigFile.mockReturnValue(mockConfig);
 
       const config = utils.loadConfig({dependencies: {"@angular/cli": "^0.0.0", "@angular/core": "~0.0.0"}, devDependencies: {"@angular/cli": "0.0.0", "@angular/core": "^0.0.0"}});
   
@@ -178,3 +179,28 @@ describe('getAngularMayorVersion', () => {
         expect(result).toBeNull();
     });
 });
+
+describe('loadPackages', () => {
+    it('reads from the correct file and parses the JSON', () => {
+      // Given
+      const packageJson: PackageJson = {
+        dependencies: {
+            dep1: '1.0.0',
+            dep2: '2.0.0',
+            dep3: '3.0.0',
+        },
+        devDependencies: {
+            devDep1: '1.0.0',
+            devDep2: '2.0.0',
+        },
+      };
+      (fs.readFileSync as jest.MockedFunction<typeof fs.readFileSync>).mockReturnValueOnce(JSON.stringify(packageJson));
+  
+      // When
+      const result = utils.loadPackages();
+  
+      // Then
+      expect(fs.readFileSync).toHaveBeenCalledWith('package.json', 'utf-8');
+      expect(result).toEqual(packageJson);
+    });
+  });

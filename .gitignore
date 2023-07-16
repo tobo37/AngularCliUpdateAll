@@ -1,7 +1,7 @@
 node_modules/
 .vs/
 **/lcov-report/**
-tests/test-env/**
+tests/integration/test-env/**
 .vscode/**
 .npmrc
 dist

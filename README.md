@@ -30,19 +30,34 @@ npm install -g update-them-all
 update-them-all
 ```
 
-If you prefer to use update-them-all programmatically in your project, import the package and call the updateAll() function:
+# Custom Configuration
 
-```javascript
-const updateThemAll = require("update-them-all");
+The application provides an option for custom configuration settings to better suit your project requirements. You can achieve this by creating a configuration file in the root directory of your project.
 
-updateThemAll.updateAll()
-  .then(() => {
-    console.log("Packages updated successfully!");
-  })
-  .catch((error) => {
-    console.error("Error updating packages:", error);
-  });
+## Steps to create a custom configuration:
+
+1. Create a new file named `update-config.json` at the root directory of your project.
+2. In this file, add your custom settings. Here is an example of the content you can include:
+
+```json
+{
+  "keepAngularMayorVersion": true,
+  "removeVersioningSymbols": false,
+  "ignoreDependencies": [],
+  "ignoreDevDependencies": []
+}
 ```
+
+## Explanation of configuration options:
+
+- **keepAngularMayorVersion**: When set to `true`, the application will maintain the major version of Angular in your project. It will still update minor and patch versions. By default, this is set to `true`.
+
+- **removeVersioningSymbols**: If this is set to `true`, the application will remove any symbols (like `^` and `~`) that indicate a version range in your `package.json` file. This means that npm will install the exact version specified, rather than the latest version that matches the specified range. The default value is `false`.
+
+- **ignoreDependencies**: This is an array that you can use to list specific dependencies that you don't want the application to update. By default, this array is empty, meaning the application will attempt to update all dependencies.
+
+- **ignoreDevDependencies**: This is an array that you can use to list specific devDependencies that you don't want the application to update. By default, this array is empty, meaning the application will attempt to update all devDependencies.
+
 
 ## Recommendation:
 Create a new branch like "update date[xy]" and then run the script

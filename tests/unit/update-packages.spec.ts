@@ -1,6 +1,8 @@
-import jsonfile from 'jsonfile';
-import { removeVersioningSymbols, updateAll, updatePackages, updatePackagesFast } from '../src/update-packages';
-import * as utils from '../src/utility';
+import * as fs from 'fs';
+import { OutputCustom } from '../../src/console-output';
+import { removeVersioningSymbols, stageAndCommitChanges, updateAll, updatePackages, updatePackagesFast } from '../../src/update-packages';
+import * as utils from '../../src/utility';
+
 
 const packageJson = {
     dependencies: {
@@ -23,7 +25,7 @@ const configJson = {
   const originalConsoleError = console.error;
 console.error = jest.fn();
 
-jest.mock('../src/utility', () => {
+jest.mock('../../src/utility', () => {
   return {
     npmSync: jest.fn(),
     npxSync: jest.fn(),
@@ -95,49 +97,92 @@ describe('updatePackages', () => {
     });
   });
 });
-jest.mock('jsonfile');
 
-describe('removeVersionIcons', () => {
-  it('should remove version icons from dependencies and devDependencies', async () => {
+
+jest.mock('fs');
+
+describe('removeVersioningSymbols', () => {
+  it('should remove versioning symbols from dependencies and devDependencies', () => {
     const mockPackageJson = {
       dependencies: {
-        'some-dependency': '~1.0.0',
-        'another-dependency': '^1.2.3',
+        'some-package': '^1.0.0',
+        'another-package': '~1.0.0',
       },
       devDependencies: {
-        'some-dev-dependency': '~4.5.6',
-        'another-dev-dependency': '^7.8.9',
+        'dev-package': '^1.0.0',
+        'another-dev-package': '~1.0.0',
       },
     };
+
+    // Mock the return value of fs.readFileSync
+    (fs.readFileSync as jest.Mock).mockReturnValue(JSON.stringify(mockPackageJson));
+    (fs.writeFileSync as jest.Mock).mockReturnValue(undefined);
+
+    removeVersioningSymbols('some/path/package.json');
+
+    // Check that fs.readFileSync was called with the correct arguments
+    expect(fs.readFileSync).toHaveBeenCalledWith('some/path/package.json', 'utf-8');
 
     const expectedPackageJson = {
       dependencies: {
-        'some-dependency': '1.0.0',
-        'another-dependency': '1.2.3',
+        'some-package': '1.0.0',
+        'another-package': '1.0.0',
       },
       devDependencies: {
-        'some-dev-dependency': '4.5.6',
-        'another-dev-dependency': '7.8.9',
+        'dev-package': '1.0.0',
+        'another-dev-package': '1.0.0',
       },
-    };
+    }
 
-    // Setup mocks
-    (jsonfile.readFile as jest.Mock).mockImplementation((_filePath, callback) => {
-      callback(null, mockPackageJson);
+    // Check that fs.writeFileSync was called with the correct arguments
+    expect(fs.writeFileSync).toHaveBeenCalledWith('some/path/package.json', JSON.stringify(expectedPackageJson, null, 2));
+  });
+});
+
+
+
+
+
+describe('stageAndCommitChanges', () => {
+  jest.mock('../../src/console-output', () => ({
+    OutputCustom: {
+      gitAdd: jest.fn(),
+    },
+  }));
+  
+  jest.mock('../../src/utility', () => ({
+    gitSync: jest.fn(),
+  }));
+
+  it('should add and commit changes correctly', async () => {
+    const packageName = 'test-package';
+    const gitAddSpy = jest.spyOn(OutputCustom, 'gitAdd');
+    const gitSyncSpy = jest.spyOn(utils, 'gitSync');
+
+    await stageAndCommitChanges(packageName);
+
+    expect(gitAddSpy).toHaveBeenCalledWith(packageName);
+    expect(gitSyncSpy).toHaveBeenCalledWith(['add', '.']);
+    expect(gitSyncSpy).toHaveBeenCalledWith(['diff', '--cached', '--quiet']);
+
+    gitAddSpy.mockRestore();
+    gitSyncSpy.mockRestore();
+  });
+
+  it('should commit changes when there are no changes to add', async () => {
+    const packageName = 'test-package';
+    const gitAddSpy = jest.spyOn(OutputCustom, 'gitAdd');
+    const gitSyncSpy = jest.spyOn(utils, 'gitSync').mockImplementationOnce(() => {
+      throw new Error('Error adding changes');
     });
 
-    (jsonfile.writeFile as jest.Mock).mockImplementation((_filePath, _data, _options, callback) => {
-      callback(null);
-    });
+    await stageAndCommitChanges(packageName);
 
-    await removeVersioningSymbols('path/to/package.json');
+    expect(gitAddSpy).toHaveBeenCalledWith(packageName);
+    expect(gitSyncSpy).toHaveBeenCalledWith(['add', '.']);
+    expect(gitSyncSpy).toHaveBeenCalledWith(['commit', '-m', packageName]);
 
-    // Verify that writeFile was called with the correct arguments
-    expect(jsonfile.writeFile).toHaveBeenCalledWith(
-      'path/to/package.json',
-      expectedPackageJson,
-      { spaces: 2 },
-      expect.any(Function),
-    );
+    gitAddSpy.mockRestore();
+    gitSyncSpy.mockRestore();
   });
 });
