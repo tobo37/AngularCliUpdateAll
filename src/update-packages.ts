@@ -18,7 +18,7 @@ export async function stageAndCommitChanges(packageName: string) {
 }
 
 export async function updateAngular(keepAngularMayorVersion: boolean, packageJson: PackageJson) {
-  if(keepAngularMayorVersion) {
+  if (keepAngularMayorVersion) {
     const angularVersion = getAngularMayorVersion(packageJson);
     npxSync(["ng", "update", `@angular/cli@${angularVersion}`, `@angular/core@${angularVersion}`]);
   } else {
@@ -35,7 +35,7 @@ export async function updatePackages(packages: string[], type: string) {
       npxSync(["ng", "update", packageName, "--allow-dirty"]);
     } catch (error) {
       if (error instanceof Error) {
-        OutputCustom.updatePackageError(packageName, error);        
+        OutputCustom.updatePackageError(packageName, error);
       }
     }
   }
@@ -54,7 +54,7 @@ export async function updatePackagesFast(packages: string[]) {
   await stageAndCommitChanges(packageNames);
 }
 
-async function npmAuditFix() {
+export async function npmAuditFix() {
   Output.boldItalic(TextEn.UP_STARTING_NPM_AUDIT);
 
   try {
@@ -64,7 +64,7 @@ async function npmAuditFix() {
     if (error instanceof Error) {
       OutputCustom.npmAuditError(error);
     }
-    
+
   }
 }
 
@@ -72,7 +72,7 @@ async function npmAuditFix() {
 
 export function removeVersioningSymbols(filepath: string) {
   // Read the package.json file and parse it into a JavaScript object.
-  const  packageObj = JSON.parse(fs.readFileSync(filepath, "utf-8"));
+  const packageObj = JSON.parse(fs.readFileSync(filepath, "utf-8"));
 
   // Extract the dependencies and devDependencies objects from the package.json object.
   const dependencies = packageObj.dependencies;
@@ -102,7 +102,7 @@ export function removeVersioningSymbols(filepath: string) {
  */
 
 export async function updateAll() {
-  
+
   const packageJson = loadPackages();
   const config = loadConfig(packageJson);
 
@@ -125,7 +125,7 @@ export async function updateAll() {
     await updatePackages(devDependencies, "devDependencies");
   }
 
-  if(config.removeVersioningSymbols) {
+  if (config.removeVersioningSymbols) {
     removeVersioningSymbols("package.json");
   }
 
