@@ -19,7 +19,7 @@
     "copy-files": "ncp package.json dist/package.json && ncp README.md dist/README.md",
     "lint": "eslint . --ext .ts",
     "prelink": "npm run build && npm run copy-files",
-    "prepublishOnly": "npm run build && npm run copy-files && cd dist && npm pack"
+    "prepublishOnly": "npm run build && npm run copy-files && npm pack"
   },
   "type": "commonjs",
   "jest": {

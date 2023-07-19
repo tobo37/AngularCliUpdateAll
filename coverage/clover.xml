@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1689512956191" clover="3.2.0">
-  <project timestamp="1689512956191" name="All files">
-    <metrics statements="140" coveredstatements="131" conditionals="19" coveredconditionals="16" methods="33" coveredmethods="32" elements="192" coveredelements="179" complexity="0" loc="140" ncloc="140" packages="2" files="5" classes="5"/>
+<coverage generated="1689760314074" clover="3.2.0">
+  <project timestamp="1689760314074" name="All files">
+    <metrics statements="140" coveredstatements="131" conditionals="17" coveredconditionals="14" methods="33" coveredmethods="32" elements="190" coveredelements="177" complexity="0" loc="140" ncloc="140" packages="2" files="5" classes="5"/>
     <package name="src">
-      <metrics statements="129" coveredstatements="120" conditionals="17" coveredconditionals="14" methods="32" coveredmethods="31"/>
+      <metrics statements="129" coveredstatements="120" conditionals="15" coveredconditionals="12" methods="32" coveredmethods="31"/>
       <file name="cli.ts" path="C:\Entwicklung\AngularCliUpdateAll\src\cli.ts">
         <metrics statements="11" coveredstatements="11" conditionals="1" coveredconditionals="1" methods="4" coveredmethods="3"/>
         <line num="2" count="1" type="stmt"/>
@@ -104,7 +104,7 @@
         <line num="138" count="3" type="stmt"/>
       </file>
       <file name="utility.ts" path="C:\Entwicklung\AngularCliUpdateAll\src\utility.ts">
-        <metrics statements="39" coveredstatements="39" conditionals="11" coveredconditionals="11" methods="11" coveredmethods="11"/>
+        <metrics statements="39" coveredstatements="39" conditionals="9" coveredconditionals="9" methods="11" coveredmethods="11"/>
         <line num="1" count="3" type="stmt"/>
         <line num="2" count="3" type="stmt"/>
         <line num="4" count="3" type="stmt"/>
@@ -116,8 +116,8 @@
         <line num="14" count="2" type="cond" truecount="2" falsecount="0"/>
         <line num="15" count="2" type="stmt"/>
         <line num="18" count="3" type="stmt"/>
-        <line num="19" count="2" type="cond" truecount="2" falsecount="0"/>
-        <line num="20" count="2" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="20" count="1" type="stmt"/>
         <line num="23" count="3" type="stmt"/>
         <line num="24" count="1" type="stmt"/>
         <line num="27" count="3" type="stmt"/>
