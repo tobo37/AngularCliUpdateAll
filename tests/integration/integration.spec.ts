@@ -18,7 +18,7 @@ describe('Integration Test: update-them-all', () => {
     await exec("npm run prepublishOnly");
     await exec("cd tests && cd integration && npx @angular/cli@15.0.0 new test-env --skip-git --skip-install --skip-tests --defaults=true");
     removeVersioningSymbols(path.join(testEnvironmentPath, 'package.json')); // downgrade from 15.9.9 to 15.0.0
-    await exec("cd tests && cd integration && cd test-env && npm install --save-dev ../../../dist/" + getPackedFileName());
+    await exec("cd tests && cd integration && cd test-env && npm install --save-dev ../../../" + getPackedFileName());
 
   });
 

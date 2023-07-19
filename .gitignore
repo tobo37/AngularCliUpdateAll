@@ -5,3 +5,4 @@ tests/integration/test-env/**
 .vscode/**
 .npmrc
 dist
+update-them-all-*.tgz

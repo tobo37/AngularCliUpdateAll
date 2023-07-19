@@ -1,3 +1,7 @@
+# 1.1.5
+    fix git commit for windows
+    fix package problem with npm publish vs. prepublish for integrationtests
+
 # 1.1.4
     fix run path
 
