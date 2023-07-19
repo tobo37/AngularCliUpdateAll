@@ -1,28 +1,28 @@
 import * as fs from 'fs';
 import { OutputCustom } from '../../src/console-output';
-import { removeVersioningSymbols, stageAndCommitChanges, updateAll, updatePackages, updatePackagesFast } from '../../src/update-packages';
+import { npmAuditFix, removeVersioningSymbols, stageAndCommitChanges, updateAll, updateAngular, updatePackages, updatePackagesFast } from '../../src/update-packages';
 import * as utils from '../../src/utility';
 
 
 const packageJson = {
-    dependencies: {
-      dep1: '1.0.0',
-      dep2: '2.0.0',
-      dep3: '3.0.0',
-    },
-    devDependencies: {
-      devDep1: '1.0.0',
-      devDep2: '2.0.0',
-      devDep3: '3.2.1',
-    },
-  };
+  dependencies: {
+    dep1: '1.0.0',
+    dep2: '2.0.0',
+    dep3: '3.0.0',
+  },
+  devDependencies: {
+    devDep1: '1.0.0',
+    devDep2: '2.0.0',
+    devDep3: '3.2.1',
+  },
+};
 
 const configJson = {
-    ignoreDependencies: ['dep3'],
-    ignoreDevDependencies: ['devDep2'],
+  ignoreDependencies: ['dep3'],
+  ignoreDevDependencies: ['devDep2'],
 }
 
-  const originalConsoleError = console.error;
+const originalConsoleError = console.error;
 console.error = jest.fn();
 
 jest.mock('../../src/utility', () => {
@@ -30,6 +30,7 @@ jest.mock('../../src/utility', () => {
     npmSync: jest.fn(),
     npxSync: jest.fn(),
     gitSync: jest.fn(),
+    getAngularMayorVersion: jest.fn(() => '8'),
     filterDependancies: jest.fn((dependencies) => dependencies),
     loadPackages: jest.fn(() => packageJson),
     loadConfig: jest.fn(() => configJson),
@@ -87,7 +88,7 @@ describe('updatePackages', () => {
     const npxSpy = jest.spyOn(utils, 'npxSync').mockImplementationOnce(() => {
       throw new Error('Error updating package1');
     });
-    
+
 
     await updatePackages(packages, 'dependencies');
 
@@ -139,8 +140,31 @@ describe('removeVersioningSymbols', () => {
   });
 });
 
+describe('updateAngular', () => {
+  it('should update Angular to a specific version', async () => {
+    const mockPackageJson = { dependencies: { '@angular/core': '8.1.1' }, devDependencies: { '@angular/cli': '8.1.1' } };
 
+    await updateAngular(true, mockPackageJson);
 
+    expect(utils.npxSync).toHaveBeenCalledWith(['ng', 'update', '@angular/cli@8', '@angular/core@8']);
+  });
+
+  it('should update Angular to the latest version', async () => {
+    const mockPackageJson = { dependencies: { '@angular/core': '8.1.1' }, devDependencies: { '@angular/cli': '8.1.1' } };
+
+    await updateAngular(false, mockPackageJson);
+
+    expect(utils.npxSync).toHaveBeenCalledWith(['ng', 'update', '@angular/cli', '@angular/core']);
+  });
+});
+
+describe('npmAuditFix', () => {
+  it('should run npm audit fix', async () => {
+    await npmAuditFix();
+
+    expect(utils.npmSync).toHaveBeenCalledWith(['audit', 'fix']);
+  });
+});
 
 
 describe('stageAndCommitChanges', () => {
@@ -149,7 +173,7 @@ describe('stageAndCommitChanges', () => {
       gitAdd: jest.fn(),
     },
   }));
-  
+
   jest.mock('../../src/utility', () => ({
     gitSync: jest.fn(),
   }));
