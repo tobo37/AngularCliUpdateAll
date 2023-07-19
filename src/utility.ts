@@ -16,7 +16,7 @@ export function npxSync(args: string[]) {
 }
 
 export function gitSync(args: string[]) {
-  const gitCommand = process.platform === "win32" ? "git.cmd" : "git";
+  const gitCommand = 'git' // process.platform === "win32" ? "git.cmd" : "git";
   return cp.spawnSync(gitCommand, args, { stdio: "inherit", shell: false });
 }
 
