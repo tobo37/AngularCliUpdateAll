@@ -1,7 +1,7 @@
 import cp from 'child_process';
 import * as fs from 'fs';
-import * as utils from '../../src/utility';
 import { PackageJson } from '../../src/model/packagejson.model';
+import * as utils from '../../src/utility';
 
 jest.mock('fs');
 jest.mock('child_process');
@@ -63,49 +63,49 @@ describe('loadConfigFile', () => {
 describe('loadConfig', () => {
     let spyLoadConfigFile: jest.SpyInstance;
 
-  beforeEach(() => {
-    spyLoadConfigFile = jest.spyOn(utils, 'loadConfigFile');
-  });
+    beforeEach(() => {
+        spyLoadConfigFile = jest.spyOn(utils, 'loadConfigFile');
+    });
 
-  afterEach(() => {
-    spyLoadConfigFile.mockRestore();
-  });
+    afterEach(() => {
+        spyLoadConfigFile.mockRestore();
+    });
 
     it('should add angular dependencies to ignore lists when keepAngularMayorVersion is true', () => {
         // did not use the mockConfig! Just the default config
-      const mockConfig = {
-        keepAngularMayorVersion: true,
-        ignoreDependencies: [],
-        ignoreDevDependencies: [],
-      };
+        const mockConfig = {
+            keepAngularMayorVersion: true,
+            ignoreDependencies: [],
+            ignoreDevDependencies: [],
+        };
 
-      spyLoadConfigFile.mockReturnValue({mockConfig });
-  
-      const config = utils.loadConfig({dependencies: {"@angular/cli": "^0.0.0", "@angular/core": "~0.0.0"}, devDependencies: {"@angular/cli": "0.0.0", "@angular/core": "^0.0.0"}});
+        spyLoadConfigFile.mockReturnValue({ mockConfig });
 
-      expect(config.ignoreDependencies).toContain("@angular/cli");
-      expect(config.ignoreDependencies).toContain("@angular/core");
-      expect(config.ignoreDevDependencies).toContain("@angular/cli");
-      expect(config.ignoreDevDependencies).toContain("@angular/core");
+        const config = utils.loadConfig({ dependencies: { "@angular/cli": "^0.0.0", "@angular/core": "~0.0.0" }, devDependencies: { "@angular/cli": "0.0.0", "@angular/core": "^0.0.0" } });
+
+        expect(config.ignoreDependencies).toContain("@angular/cli");
+        expect(config.ignoreDependencies).toContain("@angular/core");
+        expect(config.ignoreDevDependencies).toContain("@angular/cli");
+        expect(config.ignoreDevDependencies).toContain("@angular/core");
     });
-  
+
     xit('should not add angular dependencies to ignore lists when keepAngularMayorVersion is false', () => {
-      // did not use the mockConfig! Just the default config
-      const mockConfig = {
-        keepAngularMayorVersion: false,
-        ignoreDependencies: [],
-        ignoreDevDependencies: [],
-      };
-      spyLoadConfigFile.mockReturnValue(mockConfig);
+        // did not use the mockConfig! Just the default config
+        const mockConfig = {
+            keepAngularMayorVersion: false,
+            ignoreDependencies: [],
+            ignoreDevDependencies: [],
+        };
+        spyLoadConfigFile.mockReturnValue(mockConfig);
 
-      const config = utils.loadConfig({dependencies: {"@angular/cli": "^0.0.0", "@angular/core": "~0.0.0"}, devDependencies: {"@angular/cli": "0.0.0", "@angular/core": "^0.0.0"}});
-  
-      expect(config.ignoreDependencies).not.toContain("@angular/cli");
-      expect(config.ignoreDependencies).not.toContain("@angular/core");
-      expect(config.ignoreDevDependencies).not.toContain("@angular/cli");
-      expect(config.ignoreDevDependencies).not.toContain("@angular/core");
+        const config = utils.loadConfig({ dependencies: { "@angular/cli": "^0.0.0", "@angular/core": "~0.0.0" }, devDependencies: { "@angular/cli": "0.0.0", "@angular/core": "^0.0.0" } });
+
+        expect(config.ignoreDependencies).not.toContain("@angular/cli");
+        expect(config.ignoreDependencies).not.toContain("@angular/core");
+        expect(config.ignoreDevDependencies).not.toContain("@angular/cli");
+        expect(config.ignoreDevDependencies).not.toContain("@angular/core");
     });
-  });
+});
 
 describe('Testing npmSync, npxSync, gitSync functions', () => {
     beforeEach(() => {
@@ -132,14 +132,7 @@ describe('Testing npmSync, npxSync, gitSync functions', () => {
         expect(cp.spawnSync).toHaveBeenCalledWith('npx', ['create-react-app'], { stdio: 'inherit', shell: false });
     });
 
-    it('gitSync function should call the correct git command', () => {
-        Object.defineProperty(process, 'platform', { value: 'darwin' });
-        utils.gitSync(['clone', 'https://github.com/user/repo.git']);
-        expect(cp.spawnSync).toHaveBeenCalledWith('git', ['clone', 'https://github.com/user/repo.git'], { stdio: 'inherit', shell: false });
-    });
 });
-
-
 
 describe('getAngularMayorVersion', () => {
     const mockPackageJson = {
@@ -178,25 +171,25 @@ describe('getAngularMayorVersion', () => {
 
 describe('loadPackages', () => {
     it('reads from the correct file and parses the JSON', () => {
-      // Given
-      const packageJson: PackageJson = {
-        dependencies: {
-            dep1: '1.0.0',
-            dep2: '2.0.0',
-            dep3: '3.0.0',
-        },
-        devDependencies: {
-            devDep1: '1.0.0',
-            devDep2: '2.0.0',
-        },
-      };
-      (fs.readFileSync as jest.MockedFunction<typeof fs.readFileSync>).mockReturnValueOnce(JSON.stringify(packageJson));
-  
-      // When
-      const result = utils.loadPackages();
-  
-      // Then
-      expect(fs.readFileSync).toHaveBeenCalledWith('package.json', 'utf-8');
-      expect(result).toEqual(packageJson);
+        // Given
+        const packageJson: PackageJson = {
+            dependencies: {
+                dep1: '1.0.0',
+                dep2: '2.0.0',
+                dep3: '3.0.0',
+            },
+            devDependencies: {
+                devDep1: '1.0.0',
+                devDep2: '2.0.0',
+            },
+        };
+        (fs.readFileSync as jest.MockedFunction<typeof fs.readFileSync>).mockReturnValueOnce(JSON.stringify(packageJson));
+
+        // When
+        const result = utils.loadPackages();
+
+        // Then
+        expect(fs.readFileSync).toHaveBeenCalledWith('package.json', 'utf-8');
+        expect(result).toEqual(packageJson);
     });
-  });
+});

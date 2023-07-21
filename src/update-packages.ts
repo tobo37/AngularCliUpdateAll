@@ -1,31 +1,29 @@
 #!/usr/bin/env node
 
 import * as fs from 'fs';
-import { PackageJson } from './model/packagejson.model';
-import { filterDependancies, getAngularMayorVersion, gitSync, loadConfig, loadPackages, npmSync, npxSync } from "./utility";
 import { Output, OutputCustom } from './console-output';
+import { PackageJson } from './model/packagejson.model';
 import { TextEn } from './model/text-en';
+import { filterDependancies, getAngularMayorVersion, gitSync, loadConfig, loadPackages, npmSync, npxSync } from "./utility";
+
 
 
 export async function stageAndCommitChanges(packageName: string) {
-  OutputCustom.gitAdd(packageName);
-  gitSync(["add", "."]);
-  //gitSync(["diff", "--cached", "--quiet"]);
-  gitSync(["commit", "-m", packageName]);
-
+  gitSync(packageName)
 }
 
 export async function updateAngular(keepAngularMayorVersion: boolean, packageJson: PackageJson) {
   if (keepAngularMayorVersion) {
     const angularVersion = getAngularMayorVersion(packageJson);
-    npxSync(["ng", "update", `@angular/cli@${angularVersion}`, `@angular/core@${angularVersion}`]);
+    npxSync(["ng", "update", `@angular/cli@${angularVersion}`, `@angular/core@${angularVersion}`, "--allow-dirty"]);
   } else {
-    npxSync(["ng", "update", "@angular/cli", "@angular/core"]);
+    npxSync(["ng", "update", "@angular/cli", "@angular/core", "--allow-dirty"]);
   }
   await stageAndCommitChanges("@angular/cli @angular/core");
 }
 
 export async function updatePackages(packages: string[], type: string) {
+
   OutputCustom.updatingNext(type);
 
   for (const packageName of packages) {
@@ -46,7 +44,7 @@ export async function updatePackages(packages: string[], type: string) {
 export async function updatePackagesFast(packages: string[]) {
   Output.boldItalic(TextEn.UP_STARTING_UPDATING_FAST)
 
-  npxSync(["ng", "update", ...packages]);
+  npxSync(["ng", "update", ...packages, "--allow-dirty"]);
 
   const packageNames = packages.join(" ");
   await stageAndCommitChanges(packageNames);
@@ -54,16 +52,8 @@ export async function updatePackagesFast(packages: string[]) {
 
 export async function npmAuditFix() {
   Output.boldItalic(TextEn.UP_STARTING_NPM_AUDIT);
-
-  try {
-    npmSync(["audit", "fix"])
-    await stageAndCommitChanges("npm audit fix");
-  } catch (error) {
-    if (error instanceof Error) {
-      OutputCustom.npmAuditError(error);
-    }
-
-  }
+  npmSync(["audit", "fix"])
+  await stageAndCommitChanges("npm audit fix");
 }
 
 // This function is used to remove the versioning symbols (~ and ^) from the dependencies and devDependencies in a package.json file.

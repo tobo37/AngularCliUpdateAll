@@ -54,7 +54,7 @@ describe('updatePackages', () => {
 
     await updateAll();
 
-    expect(gitSpy).toHaveBeenCalledTimes(8);
+    expect(gitSpy).toHaveBeenCalledTimes(4);
     expect(npxSpy).toHaveBeenCalledTimes(3);
     expect(npmSpy).toHaveBeenCalledTimes(1);
 
@@ -68,7 +68,7 @@ describe('updatePackages', () => {
     await updatePackagesFast(packages);
 
     expect(npxSpy).toHaveBeenCalledTimes(1);
-    expect(npxSpy).toHaveBeenCalledWith(["ng", "update", ...packages]);
+    expect(npxSpy).toHaveBeenCalledWith(["ng", "update", ...packages, "--allow-dirty"]);
   });
 
   test('updatePackages updates each package individually', async () => {
@@ -146,7 +146,7 @@ describe('updateAngular', () => {
 
     await updateAngular(true, mockPackageJson);
 
-    expect(utils.npxSync).toHaveBeenCalledWith(['ng', 'update', '@angular/cli@8', '@angular/core@8']);
+    expect(utils.npxSync).toHaveBeenCalledWith(['ng', 'update', '@angular/cli@8', '@angular/core@8', '--allow-dirty']);
   });
 
   it('should update Angular to the latest version', async () => {
@@ -154,7 +154,7 @@ describe('updateAngular', () => {
 
     await updateAngular(false, mockPackageJson);
 
-    expect(utils.npxSync).toHaveBeenCalledWith(['ng', 'update', '@angular/cli', '@angular/core']);
+    expect(utils.npxSync).toHaveBeenCalledWith(['ng', 'update', '@angular/cli', '@angular/core', '--allow-dirty']);
   });
 });
 
@@ -180,16 +180,15 @@ describe('stageAndCommitChanges', () => {
 
   it('should add and commit changes correctly', async () => {
     const packageName = 'test-package';
-    const gitAddSpy = jest.spyOn(OutputCustom, 'gitAdd');
+    //const gitAddSpy = jest.spyOn(OutputCustom, 'gitAdd');
     const gitSyncSpy = jest.spyOn(utils, 'gitSync');
 
     await stageAndCommitChanges(packageName);
 
-    expect(gitAddSpy).toHaveBeenCalledWith(packageName);
-    expect(gitSyncSpy).toHaveBeenCalledWith(['add', '.']);
-    expect(gitSyncSpy).toHaveBeenCalledWith(["commit", "-m", packageName]);
+    //expect(gitAddSpy).toHaveBeenCalledWith(packageName);
+    expect(gitSyncSpy).toHaveBeenCalledWith(packageName);
 
-    gitAddSpy.mockRestore();
+    //gitAddSpy.mockRestore();
     gitSyncSpy.mockRestore();
   });
 
