@@ -1,26 +1,37 @@
 #!/usr/bin/env node
 
 import * as fs from 'fs';
-import { PackageJson } from './model/packagejson.model';
-import { filterDependancies, getAngularMayorVersion, gitSync, loadConfig, loadPackages, npmSync, npxSync } from "./utility";
 import { Output, OutputCustom } from './console-output';
+import { PackageJson } from './model/packagejson.model';
 import { TextEn } from './model/text-en';
+import { filterDependancies, getAngularMayorVersion, loadConfig, loadPackages, npmSync, npxSync } from "./utility";
+import simpleGit from 'simple-git';
+
+const git = simpleGit();
 
 
 export async function stageAndCommitChanges(packageName: string) {
   OutputCustom.gitAdd(packageName);
-  gitSync(["add", "."]);
+  try {
+    await git.add(".").commit(packageName);
+  } catch (error) {
+    if (error instanceof Error) {
+      OutputCustom.npmAuditError(error);
+    }
+  }
+  // gitSync(["add", "."]);
   //gitSync(["diff", "--cached", "--quiet"]);
-  gitSync(["commit", "-m", packageName]);
+  // gitSync(["commit", "-m", packageName]);
+
 
 }
 
 export async function updateAngular(keepAngularMayorVersion: boolean, packageJson: PackageJson) {
   if (keepAngularMayorVersion) {
     const angularVersion = getAngularMayorVersion(packageJson);
-    npxSync(["ng", "update", `@angular/cli@${angularVersion}`, `@angular/core@${angularVersion}`]);
+    npxSync(["ng", "update", `@angular/cli@${angularVersion}`, `@angular/core@${angularVersion}`, "--allow-dirty"]);
   } else {
-    npxSync(["ng", "update", "@angular/cli", "@angular/core"]);
+    npxSync(["ng", "update", "@angular/cli", "@angular/core", "--allow-dirty"]);
   }
   await stageAndCommitChanges("@angular/cli @angular/core");
 }
@@ -46,7 +57,7 @@ export async function updatePackages(packages: string[], type: string) {
 export async function updatePackagesFast(packages: string[]) {
   Output.boldItalic(TextEn.UP_STARTING_UPDATING_FAST)
 
-  npxSync(["ng", "update", ...packages]);
+  npxSync(["ng", "update", ...packages, "--allow-dirty"]);
 
   const packageNames = packages.join(" ");
   await stageAndCommitChanges(packageNames);

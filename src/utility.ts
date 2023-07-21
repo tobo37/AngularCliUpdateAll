@@ -7,16 +7,17 @@ import { TextEn } from "./model/text-en";
 
 export function npmSync(args: string[]) {
   const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
-  return cp.spawnSync(npmCommand, args, { stdio: "inherit", shell: false});
+  return cp.spawnSync(npmCommand, args, { stdio: "inherit", shell: false });
 }
 
 export function npxSync(args: string[]) {
   const npxCommand = process.platform === "win32" ? "npx.cmd" : "npx";
-  return cp.spawnSync(npxCommand, args, { stdio: "inherit", shell: false});
+  return cp.spawnSync(npxCommand, args, { stdio: "inherit", shell: false });
 }
 
-export function gitSync(args: string[]) {
-  return cp.spawnSync('git', args, { stdio: "inherit", shell: false });
+export async function gitSync(args: string[]) {
+  await cp.exec("git" + args.join(" "));
+  //return cp.spawnSync('git', args, { stdio: "inherit", shell: false });
 }
 
 export function loadPackages(): PackageJson {
@@ -25,7 +26,7 @@ export function loadPackages(): PackageJson {
 
 export function loadConfig(packageJson: PackageJson) {
   const config = loadConfigFile();
-  if(config.keepAngularMayorVersion){
+  if (config.keepAngularMayorVersion) {
     config.ignoreDependencies = filterAngular(Object.keys(packageJson.dependencies), config.ignoreDependencies);
     config.ignoreDevDependencies = filterAngular(Object.keys(packageJson.devDependencies), config.ignoreDevDependencies);
   }
@@ -34,14 +35,14 @@ export function loadConfig(packageJson: PackageJson) {
 
 function filterAngular(depList: string[], ignoreList: string[]) {
   depList.forEach((dep) => {
-    if(dep.includes("@angular")){
+    if (dep.includes("@angular")) {
       ignoreList.push(dep);
     }
   });
   return ignoreList;
 }
 
-export function loadConfigFile(){
+export function loadConfigFile() {
   try {
     return JSON.parse(fs.readFileSync('update-config.json', "utf-8"));
   } catch {
