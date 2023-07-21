@@ -8,6 +8,7 @@
       "strict": true,
       "esModuleInterop": true,
       "rootDir": "./src",
+      "noImplicitAny": false
     },
     "include": ["./src/**/*", "package.json"],
     "exclude": ["node_modules", "**/.spec./*"]

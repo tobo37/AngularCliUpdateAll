@@ -23,7 +23,7 @@ export async function gitSync(packageName: string) {
     await git.add(".").commit(packageName);
   } catch (error) {
     if (error instanceof Error) {
-      OutputCustom.npmAuditError(error);
+      Output.error(error.message);
     }
   }
 }

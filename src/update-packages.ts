@@ -52,16 +52,8 @@ export async function updatePackagesFast(packages: string[]) {
 
 export async function npmAuditFix() {
   Output.boldItalic(TextEn.UP_STARTING_NPM_AUDIT);
-
-  try {
-    npmSync(["audit", "fix"])
-    await stageAndCommitChanges("npm audit fix");
-  } catch (error) {
-    if (error instanceof Error) {
-      OutputCustom.npmAuditError(error);
-    }
-
-  }
+  npmSync(["audit", "fix"])
+  await stageAndCommitChanges("npm audit fix");
 }
 
 // This function is used to remove the versioning symbols (~ and ^) from the dependencies and devDependencies in a package.json file.
