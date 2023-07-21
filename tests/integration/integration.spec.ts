@@ -6,6 +6,7 @@ import { promisify } from 'util';
 import { removeVersioningSymbols } from '../../src/update-packages';
 
 const exec = promisify(childProcessExec);
+const commandToGetGitStatus = 'git status --porcelain';
 
 describe('Integration Test: update-them-all', () => {
   const testEnvironmentPath = path.join(__dirname, 'test-env');
@@ -16,7 +17,7 @@ describe('Integration Test: update-them-all', () => {
       await fs.removeSync(testEnvironmentPath);
     }
     await exec("npm run prepublishOnly");
-    await exec("cd tests && cd integration && npx @angular/cli@15.0.0 new test-env --skip-git --skip-install --skip-tests --defaults=true");
+    await exec("cd tests && cd integration && npx @angular/cli@15.0.0 new test-env --skip-install --skip-tests --defaults=true");
     removeVersioningSymbols(path.join(testEnvironmentPath, 'package.json')); // downgrade from 15.9.9 to 15.0.0
     await exec("cd tests && cd integration && cd test-env && npm install --save-dev ../../../" + getPackedFileName());
 
@@ -48,7 +49,7 @@ describe('Integration Test: update-them-all', () => {
     });
 
     Object.keys(oldPackageJson.devDependencies).forEach((dependency) => {
-      if(dependency !== "update-them-all") {
+      if (dependency !== "update-them-all") {
         const oldDep = oldPackageJson.devDependencies[dependency];
         const updatedDep = updatedPackageJson.devDependencies[dependency];
         if (isVersionDifferent(updatedDep, oldDep)) {
@@ -56,19 +57,21 @@ describe('Integration Test: update-them-all', () => {
         }
         expect(isVersionGreaterThanOrEqual(updatedDep, oldDep)).toBeTruthy();
       }
-      
+
     });
+    const gitStatus = await getGitStatus()
 
     expect(atLeastOneIsBiggerDep).toBeTruthy();
     expect(atLeastOneIsBiggerDevDep).toBeTruthy();
     expect(isAngularVersionGreater(updatedPackageJson.devDependencies, oldPackageJson.devDependencies)).toBeTruthy();
+    expect(gitStatus).toBe('')
   });
 
   it('should update all dependencies to the latest version', async () => {
     // Copy config & Change the keepAngularMayorVersion to false
     const srcPath = path.resolve(__dirname, '../../src/config/update-config.json');
     const destPath = path.resolve(testEnvironmentPath, 'update-config.json');
-    
+
     const fileData = fs.readFileSync(srcPath, 'utf-8');
     const jsonData = JSON.parse(fileData);
     jsonData.keepAngularMayorVersion = false;
@@ -96,7 +99,7 @@ describe('Integration Test: update-them-all', () => {
     });
 
     Object.keys(oldPackageJson.devDependencies).forEach((dependency) => {
-      if(dependency !== "update-them-all") {
+      if (dependency !== "update-them-all") {
         const oldDep = oldPackageJson.devDependencies[dependency];
         const updatedDep = updatedPackageJson.devDependencies[dependency];
         if (isVersionDifferent(updatedDep, oldDep)) {
@@ -104,12 +107,15 @@ describe('Integration Test: update-them-all', () => {
         }
         expect(isVersionGreaterThanOrEqual(updatedDep, oldDep)).toBeTruthy();
       }
-      
+
     });
+    const gitStatus = await getGitStatus()
 
     expect(atLeastOneIsBiggerDep).toBeTruthy();
     expect(atLeastOneIsBiggerDevDep).toBeTruthy();
     expect(isAngularVersionGreater(updatedPackageJson.devDependencies, oldPackageJson.devDependencies)).toBeTruthy();
+    expect(gitStatus).toBe('')
+
   });
 });
 
@@ -138,4 +144,8 @@ function isVersionDifferent(updatedVersion: string, oldVersion: string) {
 function getPackedFileName(): string {
   const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
   return `${packageJson.name}-${packageJson.version}.tgz`;
+}
+
+async function getGitStatus(): Promise<string> {
+  return await exec(commandToGetGitStatus).then((result) => result.stdout);
 }
