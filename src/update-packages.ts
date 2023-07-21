@@ -4,26 +4,12 @@ import * as fs from 'fs';
 import { Output, OutputCustom } from './console-output';
 import { PackageJson } from './model/packagejson.model';
 import { TextEn } from './model/text-en';
-import { filterDependancies, getAngularMayorVersion, loadConfig, loadPackages, npmSync, npxSync } from "./utility";
-import simpleGit from 'simple-git';
+import { filterDependancies, getAngularMayorVersion, gitSync, loadConfig, loadPackages, npmSync, npxSync } from "./utility";
 
-const git = simpleGit();
 
 
 export async function stageAndCommitChanges(packageName: string) {
-  OutputCustom.gitAdd(packageName);
-  try {
-    await git.add(".").commit(packageName);
-  } catch (error) {
-    if (error instanceof Error) {
-      OutputCustom.npmAuditError(error);
-    }
-  }
-  // gitSync(["add", "."]);
-  //gitSync(["diff", "--cached", "--quiet"]);
-  // gitSync(["commit", "-m", packageName]);
-
-
+  gitSync(packageName)
 }
 
 export async function updateAngular(keepAngularMayorVersion: boolean, packageJson: PackageJson) {
@@ -37,6 +23,7 @@ export async function updateAngular(keepAngularMayorVersion: boolean, packageJso
 }
 
 export async function updatePackages(packages: string[], type: string) {
+
   OutputCustom.updatingNext(type);
 
   for (const packageName of packages) {

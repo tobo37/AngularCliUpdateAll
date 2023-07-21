@@ -1,8 +1,9 @@
 import * as cp from "child_process";
 import * as fs from 'fs';
 import { PackageJson } from "./model/packagejson.model";
-import { Output } from "./console-output";
+import { Output, OutputCustom } from "./console-output";
 import { TextEn } from "./model/text-en";
+import simpleGit from "simple-git";
 
 
 export function npmSync(args: string[]) {
@@ -15,9 +16,16 @@ export function npxSync(args: string[]) {
   return cp.spawnSync(npxCommand, args, { stdio: "inherit", shell: false });
 }
 
-export async function gitSync(args: string[]) {
-  await cp.exec("git" + args.join(" "));
-  //return cp.spawnSync('git', args, { stdio: "inherit", shell: false });
+export async function gitSync(packageName: string) {
+  const git = simpleGit();
+  OutputCustom.gitAdd(packageName);
+  try {
+    await git.add(".").commit(packageName);
+  } catch (error) {
+    if (error instanceof Error) {
+      OutputCustom.npmAuditError(error);
+    }
+  }
 }
 
 export function loadPackages(): PackageJson {
