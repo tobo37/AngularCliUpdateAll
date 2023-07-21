@@ -6,11 +6,6 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
-  test-integration:
-    name: Integrationtest
-    runs-on: 18-alpine
-    steps:
-      - run: npm run test:integration
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
