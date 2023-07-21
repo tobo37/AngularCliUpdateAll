@@ -9,12 +9,10 @@ import { TextEn } from './model/text-en';
 
 export async function stageAndCommitChanges(packageName: string) {
   OutputCustom.gitAdd(packageName);
-  try {
-    gitSync(["add", "."]);
-    gitSync(["diff", "--cached", "--quiet"]);
-  } catch (error) {
-    gitSync(["commit", "-m", packageName]);
-  }
+  gitSync(["add", "."]);
+  //gitSync(["diff", "--cached", "--quiet"]);
+  gitSync(["commit", "-m", packageName]);
+
 }
 
 export async function updateAngular(keepAngularMayorVersion: boolean, packageJson: PackageJson) {
