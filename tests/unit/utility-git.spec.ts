@@ -1,9 +1,18 @@
-import { gitSync } from '../../src/utility';
 import simpleGit from 'simple-git';
+import { AngularUpdateConfig } from '../../src/config/update-config';
 import { Output, OutputCustom } from '../../src/console-output';
+import { gitSync } from '../../src/utility';
 
 jest.mock('simple-git');
 jest.mock('../../src/console-output');
+
+const config: AngularUpdateConfig = {
+    keepAngularMajorVersion: true,
+    removeVersioningSymbols: false,
+    ignoreDependencies: [],
+    ignoreDevDependencies: [],
+    autoCommitDuringUpdate: true
+}
 
 describe('gitSync', () => {
     let mockGit;
@@ -25,7 +34,7 @@ describe('gitSync', () => {
     it('should call simpleGit and commit', async () => {
         const packageName = 'package-name';
 
-        await gitSync(packageName);
+        await gitSync(packageName, config);
 
         expect(simpleGit).toHaveBeenCalled();
         expect(OutputCustom.gitAdd).toHaveBeenCalledWith(packageName);
@@ -39,7 +48,7 @@ describe('gitSync', () => {
         const error = new Error('Mock error');
         mockGit.commit.mockRejectedValue(error);
 
-        await gitSync(packageName);
+        await gitSync(packageName, config);
 
         expect(simpleGit).toHaveBeenCalled();
         expect(OutputCustom.gitAdd).toHaveBeenCalledWith(packageName);

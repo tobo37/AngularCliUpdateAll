@@ -5,6 +5,7 @@ import { AngularUpdateConfig } from "./config/update-config";
 import AngularUpdateDefaultConfig from "./config/update-config.json";
 import { Output, OutputCustom } from "./console-output";
 import { PackageJson } from "./model/packagejson.model";
+import { TextEn } from "./model/text-en";
 
 
 export function npmSync(args: string[]) {
@@ -17,7 +18,11 @@ export function npxSync(args: string[]) {
   return cp.spawnSync(npxCommand, args, { stdio: "inherit", shell: false });
 }
 
-export async function gitSync(packageName: string) {
+export async function gitSync(packageName: string, config: AngularUpdateConfig) {
+  if(!config.autoCommitDuringUpdate){
+    Output.yellow(TextEn.UP_GIT_SKIP);
+    return;
+  }
   const git = simpleGit();
   OutputCustom.gitAdd(packageName);
   try {

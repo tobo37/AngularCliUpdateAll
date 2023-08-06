@@ -93,23 +93,45 @@ describe('Testing npmSync, npxSync, gitSync functions', () => {
 });
 
 describe('getAngularMayorVersion', () => {
-    const mockPackageJson = {
+    const mockPackageJson: PackageJson = {
         dependencies: {
             '@angular/core': '^10.1.6',
         },
         devDependencies: {},
+        updateThemAll: {
+            keepAngularMajorVersion: true,
+            removeVersioningSymbols: false,
+            ignoreDependencies: [],
+            ignoreDevDependencies: [],
+            autoCommitDuringUpdate: false
+        }
+
     };
 
-    const mockPackageJsonDev = {
+    const mockPackageJsonDev: PackageJson = {
         dependencies: {},
         devDependencies: {
             '@angular/core': '^9.0.2',
         },
+        updateThemAll: {
+            keepAngularMajorVersion: true,
+            removeVersioningSymbols: false,
+            ignoreDependencies: [],
+            ignoreDevDependencies: [],
+            autoCommitDuringUpdate: false
+        }
     };
 
-    const mockPackageJsonWithoutAngular = {
+    const mockPackageJsonWithoutAngular: PackageJson = {
         dependencies: {},
         devDependencies: {},
+        updateThemAll: {
+            keepAngularMajorVersion: true,
+            removeVersioningSymbols: false,
+            ignoreDependencies: [],
+            ignoreDevDependencies: [],
+            autoCommitDuringUpdate: false
+        }
     };
     test('returns mayor version when angular is in dependencies', () => {
         const result = utils.getAngularMayorVersion(mockPackageJson);
@@ -140,6 +162,13 @@ describe('loadPackages', () => {
                 devDep1: '1.0.0',
                 devDep2: '2.0.0',
             },
+            updateThemAll: {
+                keepAngularMajorVersion: true,
+                removeVersioningSymbols: false,
+                ignoreDependencies: [],
+                ignoreDevDependencies: [],
+                autoCommitDuringUpdate: false
+            }
         };
         (fs.readFileSync as jest.MockedFunction<typeof fs.readFileSync>).mockReturnValueOnce(JSON.stringify(packageJson));
 
