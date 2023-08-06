@@ -203,7 +203,7 @@ describe('stageAndCommitChanges', () => {
     await stageAndCommitChanges(packageName, config);
 
     //expect(gitAddSpy).toHaveBeenCalledWith(packageName);
-    expect(gitSyncSpy).toHaveBeenCalledWith(packageName);
+    expect(gitSyncSpy).toHaveBeenCalledWith(packageName, config);
 
     //gitAddSpy.mockRestore();
     gitSyncSpy.mockRestore();
