@@ -68,13 +68,13 @@ describe('Integration Test: update-them-all', () => {
   });
 
   it('should update all dependencies to the latest version', async () => {
-    // Copy config & Change the keepAngularMayorVersion to false
+    // Copy config & Change the keepAngularMajorVersion to false
     const srcPath = path.resolve(__dirname, '../../src/config/update-config.json');
     const destPath = path.resolve(testEnvironmentPath, 'update-config.json');
 
     const fileData = fs.readFileSync(srcPath, 'utf-8');
     const jsonData = JSON.parse(fileData);
-    jsonData.keepAngularMayorVersion = false;
+    jsonData.keepAngularMajorVersion = false;
     jsonData.removeVersioningSymbols = true;
     const newFileData = JSON.stringify(jsonData, null, 2);
     fs.writeFileSync(destPath, newFileData);

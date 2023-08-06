@@ -41,16 +41,17 @@ The application provides an option for custom configuration settings to better s
 
 ```json
 {
-  "keepAngularMayorVersion": true,
+  "keepAngularMajorVersion": true,
   "removeVersioningSymbols": false,
   "ignoreDependencies": [],
-  "ignoreDevDependencies": []
+  "ignoreDevDependencies": [],
+  "autoCommitDuringUpdate": false
 }
 ```
 
 ## Explanation of configuration options:
 
-- **keepAngularMayorVersion**: When set to `true`, the application will maintain the major version of Angular in your project. It will still update minor and patch versions. By default, this is set to `true`.
+- **keepAngularMajorVersion**: When set to `true`, the application will maintain the major version of Angular in your project. It will still update minor and patch versions. By default, this is set to `true`.
 
 - **removeVersioningSymbols**: If this is set to `true`, the application will remove any symbols (like `^` and `~`) that indicate a version range in your `package.json` file. This means that npm will install the exact version specified, rather than the latest version that matches the specified range. The default value is `false`.
 

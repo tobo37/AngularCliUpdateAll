@@ -5,7 +5,7 @@ export enum TextEn {
     If you want to create a configuration, create a file named "update-config.json" in the root directory of your project with the following content:
     
     {
-      "keepAngularMayorVersion": true,
+      "keepAngularMajorVersion": true,
       "removeVersioningSymbols": false,
       "ignoreDependencies": [],
       "ignoreDevDependencies": []

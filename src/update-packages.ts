@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import { Output, OutputCustom } from './console-output';
 import { PackageJson } from './model/packagejson.model';
 import { TextEn } from './model/text-en';
-import { filterDependancies, getAngularMayorVersion, gitSync, loadConfig, loadPackages, npmSync, npxSync } from "./utility";
+import { filterDependancies, getAngularMayorVersion, gitSync, loadConfig, loadPackageJson, npmSync, npxSync } from "./utility";
 
 
 
@@ -12,8 +12,8 @@ export async function stageAndCommitChanges(packageName: string) {
   gitSync(packageName)
 }
 
-export async function updateAngular(keepAngularMayorVersion: boolean, packageJson: PackageJson) {
-  if (keepAngularMayorVersion) {
+export async function updateAngular(keepAngularMajorVersion: boolean, packageJson: PackageJson) {
+  if (keepAngularMajorVersion) {
     const angularVersion = getAngularMayorVersion(packageJson);
     npxSync(["ng", "update", `@angular/cli@${angularVersion}`, `@angular/core@${angularVersion}`, "--allow-dirty"]);
   } else {
@@ -91,13 +91,13 @@ export function removeVersioningSymbols(filepath: string) {
 
 export async function updateAll() {
 
-  const packageJson = loadPackages();
+  const packageJson = loadPackageJson();
   const config = loadConfig(packageJson);
 
   const dependencies = filterDependancies(Object.keys(packageJson.dependencies), config.ignoreDependencies);
   const devDependencies = filterDependancies(Object.keys(packageJson.devDependencies), config.ignoreDevDependencies);
 
-  await updateAngular(config.keepAngularMayorVersion, packageJson);
+  await updateAngular(config.keepAngularMajorVersion, packageJson);
   try {
     await updatePackagesFast(dependencies);
   } catch {
