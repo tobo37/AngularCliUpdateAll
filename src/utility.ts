@@ -44,7 +44,6 @@ export function addOrUpdateConfigToPackageJson(packageJson: PackageJson, config:
 
 export function loadConfig(packageJson: PackageJson): AngularUpdateConfig {
   const config = loadConfigFile(packageJson);
-  console.log("config-loaded: ", config)
   if (config.keepAngularMajorVersion) {
     config.ignoreDependencies = filterAngular(Object.keys(packageJson.dependencies), config.ignoreDependencies);
     config.ignoreDevDependencies = filterAngular(Object.keys(packageJson.devDependencies), config.ignoreDevDependencies);

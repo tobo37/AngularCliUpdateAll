@@ -39,7 +39,7 @@ describe('loadConfigFile', () => {
 
     it('returns parsed JSON when the file exists', () => {
         const config = {
-            keepAngularMajorVersion: true,
+            keepAngularMajorVersion: false,
             removeVersioningSymbols: true,
             ignoreDependencies: ["dep1"],
             ignoreDevDependencies: ["devDep1"],

@@ -26,7 +26,7 @@ describe('Integration Test: update-them-all', () => {
 
   afterAll(async () => {
     // Clean up the test-environment directory
-    //await fs.removeSync(testEnvironmentPath);
+    await fs.removeSync(testEnvironmentPath);
   });
 
   it('should update all dependencies to the latest version but stay on Angular Major', async () => {

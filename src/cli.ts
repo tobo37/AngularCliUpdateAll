@@ -6,7 +6,6 @@ import { addOrUpdateConfigToPackageJson, loadConfig, loadPackageJson } from "./u
 
 export function handleArgs(args: string[]) {
     if(args.length > 0) {
-      console.log("######args######", args)
       let continueFlag = false;
       args.forEach((arg) => {
         switch(arg) {
