@@ -11,6 +11,6 @@
     "noImplicitAny": false,
     "resolveJsonModule": true
   },
-  "include": ["./src/**/*", "package.json"],
+  "include": ["./src/**/*"],
   "exclude": ["node_modules", "**/.spec./*"]
 }

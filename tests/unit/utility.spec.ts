@@ -38,19 +38,23 @@ describe('loadConfigFile', () => {
     });
 
     it('returns parsed JSON when the file exists', () => {
-        const fsSpy = jest.spyOn(fs, 'readFileSync').mockReturnValue('{"keepAngularMajorVersion": false, "removeVersioningSymbols": true, "ignoreDependencies": ["dep1"], "ignoreDevDependencies": ["devDep1"]}');
-        const result = utils.loadConfigFile({dependencies: {}, devDependencies: {}} as PackageJson);
-        expect(fsSpy).toHaveBeenCalled();
+        const config = {
+            keepAngularMajorVersion: true,
+            removeVersioningSymbols: true,
+            ignoreDependencies: ["dep1"],
+            ignoreDevDependencies: ["devDep1"],
+            autoCommitDuringUpdate: true
+        }
+        const result = utils.loadConfigFile({dependencies: {}, devDependencies: {}, updateThemAll: config} as PackageJson);
         expect(result.keepAngularMajorVersion).toBe(false);
         expect(result.removeVersioningSymbols).toBe(true);
         expect(result.ignoreDependencies).toEqual(["dep1"]);
         expect(result.ignoreDevDependencies).toEqual(["devDep1"]);
+        expect(result.autoCommitDuringUpdate).toBe(true);
     });
 
     it('returns default JSON when the file does not exist', () => {
-        const fsSpy = jest.spyOn(fs, 'readFileSync').mockImplementation(() => { throw new Error(); });
         const result = utils.loadConfigFile({dependencies: {}, devDependencies: {}} as PackageJson);
-        expect(fsSpy).toHaveBeenCalled();
         expect(result).toEqual({
             keepAngularMajorVersion: true,
             removeVersioningSymbols: false,
@@ -58,53 +62,6 @@ describe('loadConfigFile', () => {
             ignoreDevDependencies: [],
             autoCommitDuringUpdate: false
         });
-    });
-});
-
-xdescribe('loadConfig', () => {
-    let spyLoadConfigFile: jest.SpyInstance;
-
-    beforeEach(() => {
-        spyLoadConfigFile = jest.spyOn(utils, 'loadConfigFile');
-    });
-
-    afterEach(() => {
-        spyLoadConfigFile.mockRestore();
-    });
-
-    xit('should add angular dependencies to ignore lists when keepAngularMajorVersion is true', () => {
-        // did not use the mockConfig! Just the default config
-        const mockConfig = {
-            keepAngularMajorVersion: true,
-            ignoreDependencies: [],
-            ignoreDevDependencies: [],
-        };
-
-        spyLoadConfigFile.mockReturnValue({ mockConfig });
-
-        const config = utils.loadConfig({ dependencies: { "@angular/cli": "^0.0.0", "@angular/core": "~0.0.0" }, devDependencies: { "@angular/cli": "0.0.0", "@angular/core": "^0.0.0" } });
-
-        expect(config.ignoreDependencies).toContain("@angular/cli");
-        expect(config.ignoreDependencies).toContain("@angular/core");
-        expect(config.ignoreDevDependencies).toContain("@angular/cli");
-        expect(config.ignoreDevDependencies).toContain("@angular/core");
-    });
-
-    xit('should not add angular dependencies to ignore lists when keepAngularMajorVersion is false', () => {
-        // did not use the mockConfig! Just the default config
-        const mockConfig = {
-            keepAngularMajorVersion: false,
-            ignoreDependencies: [],
-            ignoreDevDependencies: [],
-        };
-        spyLoadConfigFile.mockReturnValue(mockConfig);
-
-        const config = utils.loadConfig({ dependencies: { "@angular/cli": "^0.0.0", "@angular/core": "~0.0.0" }, devDependencies: { "@angular/cli": "0.0.0", "@angular/core": "^0.0.0" } });
-
-        expect(config.ignoreDependencies).not.toContain("@angular/cli");
-        expect(config.ignoreDependencies).not.toContain("@angular/core");
-        expect(config.ignoreDevDependencies).not.toContain("@angular/cli");
-        expect(config.ignoreDevDependencies).not.toContain("@angular/core");
     });
 });
 

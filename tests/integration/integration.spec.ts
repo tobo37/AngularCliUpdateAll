@@ -4,6 +4,7 @@ import * as path from 'path';
 import semver from 'semver';
 import { promisify } from 'util';
 import { removeVersioningSymbols } from '../../src/update-packages';
+import { addOrUpdateConfigToPackageJson, loadConfig, loadPackageJson } from '../../src/utility';
 
 const exec = promisify(childProcessExec);
 const commandToGetGitStatus = 'git status --porcelain';
@@ -25,7 +26,7 @@ describe('Integration Test: update-them-all', () => {
 
   afterAll(async () => {
     // Clean up the test-environment directory
-    await fs.removeSync(testEnvironmentPath);
+    //await fs.removeSync(testEnvironmentPath);
   });
 
   it('should update all dependencies to the latest version but stay on Angular Major', async () => {
@@ -36,7 +37,7 @@ describe('Integration Test: update-them-all', () => {
     let atLeastOneIsBiggerDevDep = false;
 
     // Run the library
-    await exec('cd tests && cd integration && cd test-env && npx update-them-all');
+    await exec('cd tests && cd integration && cd test-env && npx update-them-all --add-config');
     const updatedPackageJson = JSON.parse(fs.readFileSync(testPathsPackageJson, 'utf-8'));
 
     Object.keys(oldPackageJson.dependencies).forEach((dependency) => {
@@ -69,15 +70,10 @@ describe('Integration Test: update-them-all', () => {
 
   it('should update all dependencies to the latest version', async () => {
     // Copy config & Change the keepAngularMajorVersion to false
-    const srcPath = path.resolve(__dirname, '../../src/config/update-config.json');
-    const destPath = path.resolve(testEnvironmentPath, 'update-config.json');
-
-    const fileData = fs.readFileSync(srcPath, 'utf-8');
-    const jsonData = JSON.parse(fileData);
-    jsonData.keepAngularMajorVersion = false;
-    jsonData.removeVersioningSymbols = true;
-    const newFileData = JSON.stringify(jsonData, null, 2);
-    fs.writeFileSync(destPath, newFileData);
+    const packageJson = loadPackageJson()
+    const config = loadConfig(packageJson)
+    config.keepAngularMajorVersion = false;
+    addOrUpdateConfigToPackageJson(packageJson, config)
 
     const testPathsPackageJson = path.join(testEnvironmentPath, 'package.json');
     const oldPackageJson = JSON.parse(fs.readFileSync(testPathsPackageJson, 'utf-8'));

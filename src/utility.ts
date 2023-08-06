@@ -1,7 +1,8 @@
 import * as cp from "child_process";
 import * as fs from 'fs';
 import simpleGit from "simple-git";
-import * as AngularUpdateConfig from "./config/update-config.json";
+import { AngularUpdateConfig } from "./config/update-config";
+import AngularUpdateDefaultConfig from "./config/update-config.json";
 import { Output, OutputCustom } from "./console-output";
 import { PackageJson } from "./model/packagejson.model";
 
@@ -32,13 +33,31 @@ export function loadPackageJson(): PackageJson {
   return JSON.parse(fs.readFileSync("package.json", "utf-8"));
 }
 
-export function loadConfig(packageJson: PackageJson) {
+export function savePackageJson(packageJson: PackageJson) {
+  fs.writeFileSync("package.json", JSON.stringify(packageJson, null, 2), 'utf8');
+}
+
+export function addOrUpdateConfigToPackageJson(packageJson: PackageJson, config: AngularUpdateConfig) {
+  packageJson.updateThemAll = config;
+  savePackageJson(packageJson);
+}
+
+export function loadConfig(packageJson: PackageJson): AngularUpdateConfig {
   const config = loadConfigFile(packageJson);
+  console.log("config-loaded: ", config)
   if (config.keepAngularMajorVersion) {
     config.ignoreDependencies = filterAngular(Object.keys(packageJson.dependencies), config.ignoreDependencies);
     config.ignoreDevDependencies = filterAngular(Object.keys(packageJson.devDependencies), config.ignoreDevDependencies);
   }
   return config;
+}
+
+export function loadConfigFile(packageJson: PackageJson): AngularUpdateConfig {
+  if(packageJson.updateThemAll){
+    return packageJson.updateThemAll;
+  }
+  else{
+    return AngularUpdateDefaultConfig  }
 }
 
 function filterAngular(depList: string[], ignoreList: string[]) {
@@ -48,15 +67,6 @@ function filterAngular(depList: string[], ignoreList: string[]) {
     }
   });
   return ignoreList;
-}
-
-export function loadConfigFile(packageJson: PackageJson): AngularUpdateConfig {
-  if(packageJson.config){
-    return packageJson.config;
-  }
-  else{
-    return AngularUpdateConfig
-  }
 }
 
 export function filterDependancies(dependencies: string[], igonreDependencies: string[]) {
