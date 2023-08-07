@@ -1,9 +1,11 @@
 import * as cp from "child_process";
 import * as fs from 'fs';
-import { PackageJson } from "./model/packagejson.model";
-import { Output, OutputCustom } from "./console-output";
-import { TextEn } from "./model/text-en";
 import simpleGit from "simple-git";
+import { AngularUpdateConfig } from "./config/update-config";
+import AngularUpdateDefaultConfig from "./config/update-config.json";
+import { Output, OutputCustom } from "./console-output";
+import { PackageJson } from "./model/packagejson.model";
+import { TextEn } from "./model/text-en";
 
 
 export function npmSync(args: string[]) {
@@ -16,7 +18,11 @@ export function npxSync(args: string[]) {
   return cp.spawnSync(npxCommand, args, { stdio: "inherit", shell: false });
 }
 
-export async function gitSync(packageName: string) {
+export async function gitSync(packageName: string, config: AngularUpdateConfig) {
+  if(!config.autoCommitDuringUpdate){
+    Output.yellow(TextEn.UP_GIT_SKIP);
+    return;
+  }
   const git = simpleGit();
   OutputCustom.gitAdd(packageName);
   try {
@@ -28,17 +34,34 @@ export async function gitSync(packageName: string) {
   }
 }
 
-export function loadPackages(): PackageJson {
+export function loadPackageJson(): PackageJson {
   return JSON.parse(fs.readFileSync("package.json", "utf-8"));
 }
 
-export function loadConfig(packageJson: PackageJson) {
-  const config = loadConfigFile();
-  if (config.keepAngularMayorVersion) {
+export function savePackageJson(packageJson: PackageJson) {
+  fs.writeFileSync("package.json", JSON.stringify(packageJson, null, 2), 'utf8');
+}
+
+export function addOrUpdateConfigToPackageJson(packageJson: PackageJson, config: AngularUpdateConfig) {
+  packageJson.updateThemAll = config;
+  savePackageJson(packageJson);
+}
+
+export function loadConfig(packageJson: PackageJson): AngularUpdateConfig {
+  const config = loadConfigFile(packageJson);
+  if (config.keepAngularMajorVersion) {
     config.ignoreDependencies = filterAngular(Object.keys(packageJson.dependencies), config.ignoreDependencies);
     config.ignoreDevDependencies = filterAngular(Object.keys(packageJson.devDependencies), config.ignoreDevDependencies);
   }
   return config;
+}
+
+export function loadConfigFile(packageJson: PackageJson): AngularUpdateConfig {
+  if(packageJson.updateThemAll){
+    return packageJson.updateThemAll;
+  }
+  else{
+    return AngularUpdateDefaultConfig  }
 }
 
 function filterAngular(depList: string[], ignoreList: string[]) {
@@ -48,20 +71,6 @@ function filterAngular(depList: string[], ignoreList: string[]) {
     }
   });
   return ignoreList;
-}
-
-export function loadConfigFile() {
-  try {
-    return JSON.parse(fs.readFileSync('update-config.json', "utf-8"));
-  } catch {
-    Output.yellow(TextEn.UTIITY_CONFIG_NOT_FUND);
-    return {
-      "keepAngularMayorVersion": true,
-      "removeVersioningSymbols": false,
-      "ignoreDependencies": [],
-      "ignoreDevDependencies": []
-    }
-  }
 }
 
 export function filterDependancies(dependencies: string[], igonreDependencies: string[]) {

@@ -1,4 +1,5 @@
 import { bold, green, red, yellow } from "kleur"
+import { AngularUpdateConfig } from "./config/update-config"
 import { TextEn } from "./model/text-en"
 
 export abstract class Output {
@@ -42,5 +43,9 @@ export abstract class OutputCustom {
 
     static npmAuditError(error: Error) {
         Output.error(TextEn.UP_ERROR_NPM_AUDIT.replace("${error}", error.message));
+    }
+
+    static addConfig(config: AngularUpdateConfig){
+        Output.greenBoldUnderline(TextEn.CLI_ADD_CONFIG.replace("${config}", JSON.stringify(config, null, 2)))
     }
 }

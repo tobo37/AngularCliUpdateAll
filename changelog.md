@@ -1,3 +1,6 @@
+# 1.2.0
+    added Git commitless version
+    fix: minors
 # 1.1.6
 
     still fixing git...
@@ -24,7 +27,7 @@
 # 1.1.0
 
 - add update-config
-  - keepAngularMayorVersion default true
+  - keepAngularMajorVersion default true
   - removeVersioningSymbols default false
   - ignoreDependencies
   - ignoreDevDependencies

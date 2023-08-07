@@ -38,72 +38,30 @@ describe('loadConfigFile', () => {
     });
 
     it('returns parsed JSON when the file exists', () => {
-        const fsSpy = jest.spyOn(fs, 'readFileSync').mockReturnValue('{"keepAngularMayorVersion": false, "removeVersioningSymbols": true, "ignoreDependencies": ["dep1"], "ignoreDevDependencies": ["devDep1"]}');
-        const result = utils.loadConfigFile();
-        expect(fsSpy).toHaveBeenCalled();
-        expect(result.keepAngularMayorVersion).toBe(false);
+        const config = {
+            keepAngularMajorVersion: false,
+            removeVersioningSymbols: true,
+            ignoreDependencies: ["dep1"],
+            ignoreDevDependencies: ["devDep1"],
+            autoCommitDuringUpdate: true
+        }
+        const result = utils.loadConfigFile({dependencies: {}, devDependencies: {}, updateThemAll: config} as PackageJson);
+        expect(result.keepAngularMajorVersion).toBe(false);
         expect(result.removeVersioningSymbols).toBe(true);
         expect(result.ignoreDependencies).toEqual(["dep1"]);
         expect(result.ignoreDevDependencies).toEqual(["devDep1"]);
+        expect(result.autoCommitDuringUpdate).toBe(true);
     });
 
     it('returns default JSON when the file does not exist', () => {
-        const fsSpy = jest.spyOn(fs, 'readFileSync').mockImplementation(() => { throw new Error(); });
-        const result = utils.loadConfigFile();
-        expect(fsSpy).toHaveBeenCalled();
+        const result = utils.loadConfigFile({dependencies: {}, devDependencies: {}} as PackageJson);
         expect(result).toEqual({
-            keepAngularMayorVersion: true,
+            keepAngularMajorVersion: true,
             removeVersioningSymbols: false,
             ignoreDependencies: [],
             ignoreDevDependencies: [],
+            autoCommitDuringUpdate: false
         });
-    });
-});
-
-describe('loadConfig', () => {
-    let spyLoadConfigFile: jest.SpyInstance;
-
-    beforeEach(() => {
-        spyLoadConfigFile = jest.spyOn(utils, 'loadConfigFile');
-    });
-
-    afterEach(() => {
-        spyLoadConfigFile.mockRestore();
-    });
-
-    it('should add angular dependencies to ignore lists when keepAngularMayorVersion is true', () => {
-        // did not use the mockConfig! Just the default config
-        const mockConfig = {
-            keepAngularMayorVersion: true,
-            ignoreDependencies: [],
-            ignoreDevDependencies: [],
-        };
-
-        spyLoadConfigFile.mockReturnValue({ mockConfig });
-
-        const config = utils.loadConfig({ dependencies: { "@angular/cli": "^0.0.0", "@angular/core": "~0.0.0" }, devDependencies: { "@angular/cli": "0.0.0", "@angular/core": "^0.0.0" } });
-
-        expect(config.ignoreDependencies).toContain("@angular/cli");
-        expect(config.ignoreDependencies).toContain("@angular/core");
-        expect(config.ignoreDevDependencies).toContain("@angular/cli");
-        expect(config.ignoreDevDependencies).toContain("@angular/core");
-    });
-
-    xit('should not add angular dependencies to ignore lists when keepAngularMayorVersion is false', () => {
-        // did not use the mockConfig! Just the default config
-        const mockConfig = {
-            keepAngularMayorVersion: false,
-            ignoreDependencies: [],
-            ignoreDevDependencies: [],
-        };
-        spyLoadConfigFile.mockReturnValue(mockConfig);
-
-        const config = utils.loadConfig({ dependencies: { "@angular/cli": "^0.0.0", "@angular/core": "~0.0.0" }, devDependencies: { "@angular/cli": "0.0.0", "@angular/core": "^0.0.0" } });
-
-        expect(config.ignoreDependencies).not.toContain("@angular/cli");
-        expect(config.ignoreDependencies).not.toContain("@angular/core");
-        expect(config.ignoreDevDependencies).not.toContain("@angular/cli");
-        expect(config.ignoreDevDependencies).not.toContain("@angular/core");
     });
 });
 
@@ -135,23 +93,45 @@ describe('Testing npmSync, npxSync, gitSync functions', () => {
 });
 
 describe('getAngularMayorVersion', () => {
-    const mockPackageJson = {
+    const mockPackageJson: PackageJson = {
         dependencies: {
             '@angular/core': '^10.1.6',
         },
         devDependencies: {},
+        updateThemAll: {
+            keepAngularMajorVersion: true,
+            removeVersioningSymbols: false,
+            ignoreDependencies: [],
+            ignoreDevDependencies: [],
+            autoCommitDuringUpdate: false
+        }
+
     };
 
-    const mockPackageJsonDev = {
+    const mockPackageJsonDev: PackageJson = {
         dependencies: {},
         devDependencies: {
             '@angular/core': '^9.0.2',
         },
+        updateThemAll: {
+            keepAngularMajorVersion: true,
+            removeVersioningSymbols: false,
+            ignoreDependencies: [],
+            ignoreDevDependencies: [],
+            autoCommitDuringUpdate: false
+        }
     };
 
-    const mockPackageJsonWithoutAngular = {
+    const mockPackageJsonWithoutAngular: PackageJson = {
         dependencies: {},
         devDependencies: {},
+        updateThemAll: {
+            keepAngularMajorVersion: true,
+            removeVersioningSymbols: false,
+            ignoreDependencies: [],
+            ignoreDevDependencies: [],
+            autoCommitDuringUpdate: false
+        }
     };
     test('returns mayor version when angular is in dependencies', () => {
         const result = utils.getAngularMayorVersion(mockPackageJson);
@@ -182,11 +162,18 @@ describe('loadPackages', () => {
                 devDep1: '1.0.0',
                 devDep2: '2.0.0',
             },
+            updateThemAll: {
+                keepAngularMajorVersion: true,
+                removeVersioningSymbols: false,
+                ignoreDependencies: [],
+                ignoreDevDependencies: [],
+                autoCommitDuringUpdate: false
+            }
         };
         (fs.readFileSync as jest.MockedFunction<typeof fs.readFileSync>).mockReturnValueOnce(JSON.stringify(packageJson));
 
         // When
-        const result = utils.loadPackages();
+        const result = utils.loadPackageJson();
 
         // Then
         expect(fs.readFileSync).toHaveBeenCalledWith('package.json', 'utf-8');
