@@ -13,39 +13,35 @@ export async function stageAndCommitChanges(packageName: string, config: Angular
   gitSync(packageName, config)
 }
 
-export async function updateAngular(keepAngularMajorVersion: boolean, packageJson: PackageJson) {
-  if (keepAngularMajorVersion) {
-    const angularVersion = getAngularMayorVersion(packageJson);
-    npxSync(["ng", "update", `@angular/cli@${angularVersion}`, `@angular/core@${angularVersion}`, "--allow-dirty"]);
-  } else {
-    npxSync(["ng", "update", "@angular/cli", "@angular/core", "--allow-dirty"]);
+export async function updateAngular(migrateVersionOneUp: boolean, packageJson: PackageJson) {
+  let angularVersion = getAngularMayorVersion(packageJson);
+  if (!angularVersion) return;
+  if (migrateVersionOneUp) {
+    angularVersion = (Number(angularVersion) + 1).toString()
   }
+  npxSync(["ng", "update", `@angular/cli@${angularVersion}`, `@angular/core@${angularVersion}`]);
   await stageAndCommitChanges("@angular/cli @angular/core", packageJson.updateThemAll);
 }
 
 export async function updatePackages(packages: string[], type: string, config: AngularUpdateConfig) {
-
   OutputCustom.updatingNext(type);
-
   for (const packageName of packages) {
     try {
-      npxSync(["ng", "update", packageName, "--allow-dirty"]);
+      npxSync(["ng", "update", packageName]);
     } catch (error) {
       if (error instanceof Error) {
         OutputCustom.updatePackageError(packageName, error);
       }
     }
   }
-
   const packageNames = packages.join(" ");
-
   await stageAndCommitChanges(packageNames, config);
 }
 
 export async function updatePackagesFast(packages: string[], config: AngularUpdateConfig) {
   Output.boldItalic(TextEn.UP_STARTING_UPDATING_FAST)
 
-  npxSync(["ng", "update", ...packages, "--allow-dirty"]);
+  npxSync(["ng", "update", ...packages]);
 
   const packageNames = packages.join(" ");
   await stageAndCommitChanges(packageNames, config);

@@ -46,33 +46,6 @@ export function addOrUpdateConfigToPackageJson(packageJson: PackageJson, config:
   savePackageJson(packageJson);
 }
 
-// export function loadConfig(packageJson: PackageJson): AngularUpdateConfig {
-//   const config = loadConfigFile(packageJson);
-//   if (config.migrateAngularVersion) {
-//     config.ignoreDependencies = filterAngular(Object.keys(packageJson.dependencies), config.ignoreDependencies);
-//     config.ignoreDevDependencies = filterAngular(Object.keys(packageJson.devDependencies), config.ignoreDevDependencies);
-//   }
-//   return config;
-// }
-
-export function loadConfigFile(packageJson: PackageJson): AngularUpdateConfig {
-
-  return packageJson.updateThemAll as AngularUpdateConfig;
-
-  // else {
-  //   return AngularUpdateDefaultConfig
-  // }
-}
-
-function filterAngular(depList: string[], ignoreList: string[]) {
-  depList.forEach((dep) => {
-    if (dep.includes("@angular")) {
-      ignoreList.push(dep);
-    }
-  });
-  return ignoreList;
-}
-
 export function filterDependancies(dependencies: string[], igonreDependencies: string[]) {
   return dependencies.filter((dep) => !igonreDependencies.includes(dep));
 }

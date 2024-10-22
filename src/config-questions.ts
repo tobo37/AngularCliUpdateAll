@@ -39,39 +39,45 @@ function askQuestion(query: string): Promise<string> {
 
 async function askAngularMigration(config: AngularUpdateConfig) {
     try {
+        // Read and parse the package.json file to get the current Angular version
         const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
         const currentAngularVersion = packageJson.dependencies['@angular/core']?.match(/(\d+)\./)?.[1];
 
         if (!currentAngularVersion) {
-            throw new Error("Angular version not found in package.json dependencies.");
+            throw new Error("Unable to find the Angular version in package.json dependencies.");
         }
 
+        // Get the latest Angular version available from npm
         const versionRaw = await execPromise('npm view @angular/core version');
-        const versionString = (typeof versionRaw === 'string') ? versionRaw : ''
-
+        const versionString = typeof versionRaw === 'string' ? versionRaw : '';
         const latestAngularVersion = versionString.split('.')[0];
 
+        // Check if a new major version is available
         if (latestAngularVersion && parseInt(latestAngularVersion) > parseInt(currentAngularVersion)) {
             const answer = await askQuestion(
-                `A new major version of Angular is available: ${latestAngularVersion}. Would you like to perform a migration (+1) major Version? (yes/no default): `
+                `🚀 A new major version of Angular is available (v${latestAngularVersion}). Would you like to migrate one major version up? (yes/no default): `
             );
 
-            if (answer.toLowerCase() === 'yes' || answer.toLowerCase() === 'y') {
-                Output.greenBoldUnderline(`Angular migrate to ${parseInt(currentAngularVersion) + 1}`);
-                if (parseInt(currentAngularVersion) + 1 < parseInt(latestAngularVersion)) {
-                    Output.yellow("Repeat the migration to reach " + latestAngularVersion);
+            if (['yes', 'y'].includes(answer.trim().toLowerCase())) {
+                const nextVersion = parseInt(currentAngularVersion) + 1;
+                Output.greenBoldUnderline(`✔️ Migrating Angular to v${nextVersion}...`);
+
+                if (nextVersion < parseInt(latestAngularVersion)) {
+                    Output.yellow(`⚠️ Multiple updates required to reach the latest version (v${latestAngularVersion}). Consider repeating the migration.`);
                 }
+
                 config.migrateAngularVersion = true;
             } else {
-                Output.greenBoldUnderline("Staying on the current version.");
+                Output.greenBoldUnderline("✔️ Staying on the current version.");
             }
         } else {
-            Output.greenBoldUnderline("You are on the Latest Major Version");
+            Output.greenBoldUnderline("✔️ You are already using the latest major version.");
         }
     } catch (error: any) {
-        Output.error(`Command failed: ${error.message}`);
+        Output.error(`❌ Migration check failed: ${error.message}`);
     }
 }
+
 
 async function askRemoveVersioningSymbols(config: AngularUpdateConfig) {
     const answer = await askQuestion(
