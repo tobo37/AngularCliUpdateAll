@@ -1,20 +1,11 @@
 import { exec } from "node:child_process";
 import { readFileSync } from "node:fs";
 import * as readline from 'node:readline';
+import { AngularUpdateConfig, DefaultConfig } from "./config/update-config";
 import { Output } from "./console-output";
-import { AngularUpdateConfig } from "./config/update-config";
-import stripAnsi from 'strip-ansi'
-
-const defaultConfig = {
-    migrateAngularVersion: false,
-    removeVersioningSymbols: false,
-    ignoreDependencies: [],
-    ignoreDevDependencies: [],
-    autoCommitDuringUpdate: false
-};
 
 export async function askForConfig() {
-    let config = defaultConfig;
+    let config = DefaultConfig;
     await askAngularMigration(config);
     await askRemoveVersioningSymbols(config);
     // await askIgnoreDependencies(config);

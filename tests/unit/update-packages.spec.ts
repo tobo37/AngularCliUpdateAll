@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { AngularUpdateConfig } from '../../src/config/update-config';
+import { DefaultConfig } from '../../src/config/update-config';
 import { OutputCustom } from '../../src/console-output';
 import { PackageJson } from '../../src/model/packagejson.model';
 import { npmAuditFix, removeVersioningSymbols, stageAndCommitChanges, updateAll, updateAngular, updatePackages, updatePackagesFast } from '../../src/update-packages';
@@ -17,13 +17,7 @@ const packageJson: PackageJson = {
     devDep2: '2.0.0',
     devDep3: '3.2.1',
   },
-  updateThemAll: {
-    keepAngularMajorVersion: true,
-    removeVersioningSymbols: false,
-    ignoreDependencies: [],
-    ignoreDevDependencies: [],
-    autoCommitDuringUpdate: false
-}
+  updateThemAll: DefaultConfig
 };
 
 const configJson = {
@@ -46,14 +40,6 @@ jest.mock('../../src/utility', () => {
   };
 });
 
-const config: AngularUpdateConfig = {
-  autoCommitDuringUpdate: true,
-  ignoreDependencies: [],
-  ignoreDevDependencies: [],
-  keepAngularMajorVersion: false,
-  removeVersioningSymbols: false,
-};
-
 describe('updatePackages', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -63,13 +49,14 @@ describe('updatePackages', () => {
     console.error = originalConsoleError;
   });
 
-  xtest('updateAll calls updateAngular, updatePackages, and npmAuditFix', async () => {
+  test('updateAll calls updateAngular, updatePackages, and npmAuditFix', async () => {
 
     const gitSpy = jest.spyOn(utils, 'gitSync');
     const npxSpy = jest.spyOn(utils, 'npxSync');
     const npmSpy = jest.spyOn(utils, 'npmSync');
+    const loadPackageSpy = jest.spyOn(utils, 'loadPackageJson').mockReturnValue({ dependencies: {}, devDependencies: {}, updateThemAll: DefaultConfig })
 
-    await updateAll();
+    await updateAll(DefaultConfig);
 
     expect(gitSpy).toHaveBeenCalledTimes(4);
     expect(npxSpy).toHaveBeenCalledTimes(3);
@@ -82,21 +69,21 @@ describe('updatePackages', () => {
     const packages = ['package1', 'package2', 'package3'];
     const npxSpy = jest.spyOn(utils, 'npxSync');
 
-    await updatePackagesFast(packages, config);
+    await updatePackagesFast(packages, DefaultConfig);
 
     expect(npxSpy).toHaveBeenCalledTimes(1);
-    expect(npxSpy).toHaveBeenCalledWith(["ng", "update", ...packages, "--allow-dirty"]);
+    expect(npxSpy).toHaveBeenCalledWith(["ng", "update", ...packages]);
   });
 
   test('updatePackages updates each package individually', async () => {
     const packages = ['package1', 'package2', 'package3'];
     const npxSpy = jest.spyOn(utils, 'npxSync');
 
-    await updatePackages(packages, 'dependencies', config);
+    await updatePackages(packages, 'dependencies', DefaultConfig);
 
     expect(npxSpy).toHaveBeenCalledTimes(packages.length);
     packages.forEach((packageName) => {
-      expect(npxSpy).toHaveBeenCalledWith(["ng", "update", packageName, "--allow-dirty"]);
+      expect(npxSpy).toHaveBeenCalledWith(["ng", "update", packageName]);
     });
   });
 
@@ -107,11 +94,11 @@ describe('updatePackages', () => {
     });
 
 
-    await updatePackages(packages, 'dependencies', config);
+    await updatePackages(packages, 'dependencies', DefaultConfig);
 
     expect(npxSpy).toHaveBeenCalledTimes(packages.length);
     packages.forEach((packageName) => {
-      expect(npxSpy).toHaveBeenCalledWith(["ng", "update", packageName, "--allow-dirty"]);
+      expect(npxSpy).toHaveBeenCalledWith(["ng", "update", packageName]);
     });
   });
 });
@@ -159,25 +146,25 @@ describe('removeVersioningSymbols', () => {
 
 describe('updateAngular', () => {
   it('should update Angular to a specific version', async () => {
-    const mockPackageJson: PackageJson = { dependencies: { '@angular/core': '8.1.1' }, devDependencies: { '@angular/cli': '8.1.1' },updateThemAll: config };
-
-    await updateAngular(true, mockPackageJson);
-
-    expect(utils.npxSync).toHaveBeenCalledWith(['ng', 'update', '@angular/cli@8', '@angular/core@8', '--allow-dirty']);
-  });
-
-  it('should update Angular to the latest version', async () => {
-    const mockPackageJson = { dependencies: { '@angular/core': '8.1.1' }, devDependencies: { '@angular/cli': '8.1.1' }, updateThemAll: config };
+    const mockPackageJson: PackageJson = { dependencies: { '@angular/core': '8.1.1' }, devDependencies: { '@angular/cli': '8.1.1' }, updateThemAll: DefaultConfig };
 
     await updateAngular(false, mockPackageJson);
 
-    expect(utils.npxSync).toHaveBeenCalledWith(['ng', 'update', '@angular/cli', '@angular/core', '--allow-dirty']);
+    expect(utils.npxSync).toHaveBeenCalledWith(['ng', 'update', '@angular/cli@8', '@angular/core@8']);
+  });
+
+  it('should update Angular to the latest version', async () => {
+    const mockPackageJson = { dependencies: { '@angular/core': '8.1.1' }, devDependencies: { '@angular/cli': '8.1.1' }, updateThemAll: DefaultConfig };
+
+    await updateAngular(true, mockPackageJson);
+
+    expect(utils.npxSync).toHaveBeenCalledWith(['ng', 'update', '@angular/cli@9', '@angular/core@9']);
   });
 });
 
 describe('npmAuditFix', () => {
   it('should run npm audit fix', async () => {
-    await npmAuditFix(config);
+    await npmAuditFix(DefaultConfig);
 
     expect(utils.npmSync).toHaveBeenCalledWith(['audit', 'fix']);
   });
@@ -200,10 +187,10 @@ describe('stageAndCommitChanges', () => {
     //const gitAddSpy = jest.spyOn(OutputCustom, 'gitAdd');
     const gitSyncSpy = jest.spyOn(utils, 'gitSync');
 
-    await stageAndCommitChanges(packageName, config);
+    await stageAndCommitChanges(packageName, DefaultConfig);
 
     //expect(gitAddSpy).toHaveBeenCalledWith(packageName);
-    expect(gitSyncSpy).toHaveBeenCalledWith(packageName, config);
+    expect(gitSyncSpy).toHaveBeenCalledWith(packageName, DefaultConfig);
 
     //gitAddSpy.mockRestore();
     gitSyncSpy.mockRestore();
@@ -216,7 +203,7 @@ describe('stageAndCommitChanges', () => {
       throw new Error('Error adding changes');
     });
 
-    await stageAndCommitChanges(packageName, config);
+    await stageAndCommitChanges(packageName, DefaultConfig);
 
     expect(gitAddSpy).toHaveBeenCalledWith(packageName);
     expect(gitSyncSpy).toHaveBeenCalledWith(['add', '.']);

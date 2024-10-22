@@ -1,18 +1,12 @@
 import simpleGit from 'simple-git';
-import { AngularUpdateConfig } from '../../src/config/update-config';
+import { DefaultConfig } from '../../src/config/update-config';
 import { Output, OutputCustom } from '../../src/console-output';
 import { gitSync } from '../../src/utility';
 
 jest.mock('simple-git');
 jest.mock('../../src/console-output');
 
-const config: AngularUpdateConfig = {
-    keepAngularMajorVersion: true,
-    removeVersioningSymbols: false,
-    ignoreDependencies: [],
-    ignoreDevDependencies: [],
-    autoCommitDuringUpdate: true
-}
+const config = { ...DefaultConfig, autoCommitDuringUpdate: true }
 
 describe('gitSync', () => {
     let mockGit;

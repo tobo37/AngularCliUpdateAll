@@ -5,3 +5,11 @@ export interface AngularUpdateConfig {
     removeVersioningSymbols: boolean;
     autoCommitDuringUpdate: boolean;
 }
+
+export const DefaultConfig = {
+    migrateAngularVersion: false,
+    removeVersioningSymbols: false,
+    ignoreDependencies: [],
+    ignoreDevDependencies: [],
+    autoCommitDuringUpdate: false
+};

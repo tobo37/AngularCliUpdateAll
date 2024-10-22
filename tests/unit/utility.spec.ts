@@ -2,6 +2,7 @@ import cp from 'child_process';
 import * as fs from 'fs';
 import { PackageJson } from '../../src/model/packagejson.model';
 import * as utils from '../../src/utility';
+import { DefaultConfig } from '../../src/config/update-config';
 
 jest.mock('fs');
 jest.mock('child_process');
@@ -27,41 +28,6 @@ describe('filterDependancies', () => {
         const ignoreDependencies: string[] = ['dep1', 'dep2', 'dep3'];
         const filtered: string[] = utils.filterDependancies(dependencies, ignoreDependencies);
         expect(filtered).toEqual([]);
-    });
-});
-
-describe('loadConfigFile', () => {
-
-    beforeEach(() => {
-        // Reset the modules to get a clean instance of fs for each test
-        jest.resetModules();
-    });
-
-    it('returns parsed JSON when the file exists', () => {
-        const config = {
-            keepAngularMajorVersion: false,
-            removeVersioningSymbols: true,
-            ignoreDependencies: ["dep1"],
-            ignoreDevDependencies: ["devDep1"],
-            autoCommitDuringUpdate: true
-        }
-        const result = utils.loadConfigFile({dependencies: {}, devDependencies: {}, updateThemAll: config} as PackageJson);
-        expect(result.keepAngularMajorVersion).toBe(false);
-        expect(result.removeVersioningSymbols).toBe(true);
-        expect(result.ignoreDependencies).toEqual(["dep1"]);
-        expect(result.ignoreDevDependencies).toEqual(["devDep1"]);
-        expect(result.autoCommitDuringUpdate).toBe(true);
-    });
-
-    it('returns default JSON when the file does not exist', () => {
-        const result = utils.loadConfigFile({dependencies: {}, devDependencies: {}} as PackageJson);
-        expect(result).toEqual({
-            keepAngularMajorVersion: true,
-            removeVersioningSymbols: false,
-            ignoreDependencies: [],
-            ignoreDevDependencies: [],
-            autoCommitDuringUpdate: false
-        });
     });
 });
 
@@ -98,13 +64,7 @@ describe('getAngularMayorVersion', () => {
             '@angular/core': '^10.1.6',
         },
         devDependencies: {},
-        updateThemAll: {
-            keepAngularMajorVersion: true,
-            removeVersioningSymbols: false,
-            ignoreDependencies: [],
-            ignoreDevDependencies: [],
-            autoCommitDuringUpdate: false
-        }
+        updateThemAll: DefaultConfig
 
     };
 
@@ -113,26 +73,14 @@ describe('getAngularMayorVersion', () => {
         devDependencies: {
             '@angular/core': '^9.0.2',
         },
-        updateThemAll: {
-            keepAngularMajorVersion: true,
-            removeVersioningSymbols: false,
-            ignoreDependencies: [],
-            ignoreDevDependencies: [],
-            autoCommitDuringUpdate: false
-        }
+        updateThemAll: DefaultConfig
     };
 
     const mockPackageJsonWithoutAngular: PackageJson = {
         dependencies: {},
         devDependencies: {},
-        updateThemAll: {
-            keepAngularMajorVersion: true,
-            removeVersioningSymbols: false,
-            ignoreDependencies: [],
-            ignoreDevDependencies: [],
-            autoCommitDuringUpdate: false
-        }
-    };
+        updateThemAll: DefaultConfig
+    }
     test('returns mayor version when angular is in dependencies', () => {
         const result = utils.getAngularMayorVersion(mockPackageJson);
         expect(result).toBe('10');  // As per the mockPackageJson object
@@ -163,7 +111,7 @@ describe('loadPackages', () => {
                 devDep2: '2.0.0',
             },
             updateThemAll: {
-                keepAngularMajorVersion: true,
+                migrateAngularVersion: true,
                 removeVersioningSymbols: false,
                 ignoreDependencies: [],
                 ignoreDevDependencies: [],
