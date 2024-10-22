@@ -14,20 +14,6 @@ describe('npm package functions', () => {
     jest.clearAllMocks();
   });
 
-  describe('handleArgs', () => {
-    it('should call Output.simple if there are arguments', () => {
-      const mockArgs = ['arg1'];
-      cli.handleArgs(mockArgs);
-      expect(Output.simple).toHaveBeenCalledWith(TextEn.CLI_INVALID_ARGS);
-    });
-
-    it('should not call Output.simple if there are no arguments', () => {
-      const mockArgs: string[] = [];
-      cli.handleArgs(mockArgs);
-      expect(Output.simple).not.toHaveBeenCalled();
-    });
-  });
-
  describe('init', () => {
     it('should call updateAll and Output.greenBoldUnderline if updateAll is successful', async () => {
       const mockArgs: string[] = [];
@@ -35,16 +21,6 @@ describe('npm package functions', () => {
       await cli.init(mockArgs);
       expect(updateAll).toHaveBeenCalled();
       expect(Output.greenBoldUnderline).toHaveBeenCalledWith(TextEn.CLI_COMPLETE);
-    });
-
-    xit('should call Output.error if updateAll fails', async () => {
-      const mockArgs: string[] = [];
-      const mockError = new Error('Test error');
-      const outputSpy = jest.spyOn(Output, 'error');
-      (updateAll as jest.Mock).mockRejectedValue(Promise.reject(mockError)); // Mock updateAll to fail
-      await cli.init(mockArgs);
-      expect(updateAll).toHaveBeenCalled();
-      expect(outputSpy).toHaveBeenCalledWith(mockError);
     });
   });
 });

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1691356639714" clover="3.2.0">
-  <project timestamp="1691356639714" name="All files">
+<coverage generated="1729062655360" clover="3.2.0">
+  <project timestamp="1729062655360" name="All files">
     <metrics statements="165" coveredstatements="133" conditionals="25" coveredconditionals="20" methods="38" coveredmethods="32" elements="228" coveredelements="185" complexity="0" loc="165" ncloc="165" packages="2" files="5" classes="5"/>
     <package name="src">
       <metrics statements="151" coveredstatements="119" conditionals="23" coveredconditionals="18" methods="37" coveredmethods="31"/>
-      <file name="cli.ts" path="E:\entwicklung\projects\AngularCliUpdateAll\src\cli.ts">
+      <file name="cli.ts" path="C:\Entwicklung\Github\AngularCliUpdateAll\src\cli.ts">
         <metrics statements="24" coveredstatements="15" conditionals="6" coveredconditionals="3" methods="6" coveredmethods="4"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
@@ -31,7 +31,7 @@
         <line num="38" count="0" type="stmt"/>
         <line num="39" count="0" type="stmt"/>
       </file>
-      <file name="console-output.ts" path="E:\entwicklung\projects\AngularCliUpdateAll\src\console-output.ts">
+      <file name="console-output.ts" path="C:\Entwicklung\Github\AngularCliUpdateAll\src\console-output.ts">
         <metrics statements="15" coveredstatements="14" conditionals="0" coveredconditionals="0" methods="11" coveredmethods="10"/>
         <line num="1" count="6" type="stmt"/>
         <line num="3" count="6" type="stmt"/>
@@ -49,7 +49,7 @@
         <line num="45" count="1" type="stmt"/>
         <line num="49" count="0" type="stmt"/>
       </file>
-      <file name="update-packages.ts" path="E:\entwicklung\projects\AngularCliUpdateAll\src\update-packages.ts">
+      <file name="update-packages.ts" path="C:\Entwicklung\Github\AngularCliUpdateAll\src\update-packages.ts">
         <metrics statements="60" coveredstatements="43" conditionals="4" coveredconditionals="3" methods="7" coveredmethods="6"/>
         <line num="3" count="3" type="stmt"/>
         <line num="5" count="3" type="stmt"/>
@@ -112,7 +112,7 @@
         <line num="126" count="3" type="stmt"/>
         <line num="127" count="3" type="stmt"/>
       </file>
-      <file name="utility.ts" path="E:\entwicklung\projects\AngularCliUpdateAll\src\utility.ts">
+      <file name="utility.ts" path="C:\Entwicklung\Github\AngularCliUpdateAll\src\utility.ts">
         <metrics statements="52" coveredstatements="47" conditionals="13" coveredconditionals="12" methods="13" coveredmethods="11"/>
         <line num="1" count="5" type="stmt"/>
         <line num="2" count="5" type="stmt"/>
@@ -170,7 +170,7 @@
     </package>
     <package name="src.model">
       <metrics statements="14" coveredstatements="14" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
-      <file name="text-en.ts" path="E:\entwicklung\projects\AngularCliUpdateAll\src\model\text-en.ts">
+      <file name="text-en.ts" path="C:\Entwicklung\Github\AngularCliUpdateAll\src\model\text-en.ts">
         <metrics statements="14" coveredstatements="14" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
         <line num="1" count="7" type="cond" truecount="2" falsecount="0"/>
         <line num="2" count="7" type="stmt"/>

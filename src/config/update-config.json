@@ -1,7 +1,0 @@
-{
-    "keepAngularMajorVersion": true,
-    "removeVersioningSymbols": false,
-    "ignoreDependencies": [],
-    "ignoreDevDependencies":[],
-    "autoCommitDuringUpdate": false
-}

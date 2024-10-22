@@ -4,7 +4,7 @@ import * as path from 'path';
 import semver from 'semver';
 import { promisify } from 'util';
 import { removeVersioningSymbols } from '../../src/update-packages';
-import { loadConfig } from '../../src/utility';
+import { DefaultConfig } from '../../src/config/update-config';
 
 const exec = promisify(childProcessExec);
 const commandToGetGitStatus = 'git status --porcelain';
@@ -70,13 +70,13 @@ describe('Integration Test: update-them-all', () => {
 
   it('should update all dependencies to the latest version', async () => {
     // Copy config & Change the keepAngularMajorVersion to false
-    
+
 
     const testPathsPackageJson = path.join(testEnvironmentPath, 'package.json');
     const oldPackageJson = JSON.parse(fs.readFileSync(testPathsPackageJson, 'utf-8'));
 
-    const config = loadConfig(oldPackageJson)
-    config.keepAngularMajorVersion = false;
+    const config = DefaultConfig
+    config.migrateAngularVersion = true;
     oldPackageJson.updateThemAll = config;
     fs.writeFileSync(testPathsPackageJson, JSON.stringify(oldPackageJson, null, 2), 'utf8');
 

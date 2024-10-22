@@ -5,28 +5,26 @@ import { AngularUpdateConfig } from './config/update-config';
 import { Output, OutputCustom } from './console-output';
 import { PackageJson } from './model/packagejson.model';
 import { TextEn } from './model/text-en';
-import { filterDependancies, getAngularMayorVersion, gitSync, loadConfig, loadPackageJson, npmSync, npxSync } from "./utility";
+import { filterDependancies, getAngularMayorVersion, gitSync, loadPackageJson, npmSync, npxSync } from "./utility";
 
 
 
 export async function stageAndCommitChanges(packageName: string, config: AngularUpdateConfig) {
-  gitSync(packageName, config)
+  return await gitSync(packageName, config)
 }
 
-export async function updateAngular(keepAngularMajorVersion: boolean, packageJson: PackageJson) {
-  if (keepAngularMajorVersion) {
-    const angularVersion = getAngularMayorVersion(packageJson);
-    npxSync(["ng", "update", `@angular/cli@${angularVersion}`, `@angular/core@${angularVersion}`, "--allow-dirty"]);
-  } else {
-    npxSync(["ng", "update", "@angular/cli", "@angular/core", "--allow-dirty"]);
+export async function updateAngular(migrateVersionOneUp: boolean, packageJson: PackageJson) {
+  let angularVersion = getAngularMayorVersion(packageJson);
+  if (!angularVersion) return;
+  if (migrateVersionOneUp) {
+    angularVersion = (Number(angularVersion) + 1).toString()
   }
+  npxSync(["ng", "update", `@angular/cli@${angularVersion}`, `@angular/core@${angularVersion}`, "--allow-dirty"]);
   await stageAndCommitChanges("@angular/cli @angular/core", packageJson.updateThemAll);
 }
 
 export async function updatePackages(packages: string[], type: string, config: AngularUpdateConfig) {
-
   OutputCustom.updatingNext(type);
-
   for (const packageName of packages) {
     try {
       npxSync(["ng", "update", packageName, "--allow-dirty"]);
@@ -36,9 +34,7 @@ export async function updatePackages(packages: string[], type: string, config: A
       }
     }
   }
-
   const packageNames = packages.join(" ");
-
   await stageAndCommitChanges(packageNames, config);
 }
 
@@ -89,16 +85,16 @@ export function removeVersioningSymbols(filepath: string) {
  * Main function to update all packages.
 
  */
-export async function updateAll() {
+export async function updateAll(config: AngularUpdateConfig) {
 
   const packageJson = loadPackageJson();
-  const config = loadConfig(packageJson);
+  // const config = loadConfig(packageJson);
   packageJson.updateThemAll = config;
 
   const dependencies = filterDependancies(Object.keys(packageJson.dependencies), config.ignoreDependencies);
   const devDependencies = filterDependancies(Object.keys(packageJson.devDependencies), config.ignoreDevDependencies);
 
-  await updateAngular(config.keepAngularMajorVersion, packageJson);
+  await updateAngular(config.migrateAngularVersion, packageJson);
   try {
     await updatePackagesFast(dependencies, config);
   } catch {
