@@ -10,7 +10,7 @@ import { filterDependancies, getAngularMayorVersion, gitSync, loadPackageJson, n
 
 
 export async function stageAndCommitChanges(packageName: string, config: AngularUpdateConfig) {
-  gitSync(packageName, config)
+  return await gitSync(packageName, config)
 }
 
 export async function updateAngular(migrateVersionOneUp: boolean, packageJson: PackageJson) {
@@ -19,7 +19,7 @@ export async function updateAngular(migrateVersionOneUp: boolean, packageJson: P
   if (migrateVersionOneUp) {
     angularVersion = (Number(angularVersion) + 1).toString()
   }
-  npxSync(["ng", "update", `@angular/cli@${angularVersion}`, `@angular/core@${angularVersion}`]);
+  npxSync(["ng", "update", `@angular/cli@${angularVersion}`, `@angular/core@${angularVersion}`, "--allow-dirty"]);
   await stageAndCommitChanges("@angular/cli @angular/core", packageJson.updateThemAll);
 }
 
@@ -27,7 +27,7 @@ export async function updatePackages(packages: string[], type: string, config: A
   OutputCustom.updatingNext(type);
   for (const packageName of packages) {
     try {
-      npxSync(["ng", "update", packageName]);
+      npxSync(["ng", "update", packageName, "--allow-dirty"]);
     } catch (error) {
       if (error instanceof Error) {
         OutputCustom.updatePackageError(packageName, error);
@@ -41,7 +41,7 @@ export async function updatePackages(packages: string[], type: string, config: A
 export async function updatePackagesFast(packages: string[], config: AngularUpdateConfig) {
   Output.boldItalic(TextEn.UP_STARTING_UPDATING_FAST)
 
-  npxSync(["ng", "update", ...packages]);
+  npxSync(["ng", "update", ...packages, "--allow-dirty"]);
 
   const packageNames = packages.join(" ");
   await stageAndCommitChanges(packageNames, config);
