@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import * as readline from 'node:readline';
 import { Output } from "./console-output";
 import { AngularUpdateConfig } from "./config/update-config";
+import stripAnsi from 'strip-ansi'
 
 const defaultConfig = {
     migrateAngularVersion: false,
@@ -10,19 +11,33 @@ const defaultConfig = {
     ignoreDependencies: [],
     ignoreDevDependencies: [],
     autoCommitDuringUpdate: false
-}
+};
 
-export function askForConfig() {
+export async function askForConfig() {
     let config = defaultConfig;
-    askAngularMigration(config);
-    askRemoveVersioningSymbols(config);
-    askIgnoreDependencies(config);
-    askIgnoreDevDependencies(config);
-    askAutoCommit(config);
+    await askAngularMigration(config);
+    await askRemoveVersioningSymbols(config);
+    // await askIgnoreDependencies(config);
+    // await askIgnoreDevDependencies(config);
+    await askAutoCommit(config);
     return config;
 }
 
-function askAngularMigration(config: AngularUpdateConfig) {
+function askQuestion(query: string): Promise<string> {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+    return new Promise((resolve) => {
+        rl.question(query, (answer) => {
+            rl.close();
+            resolve(answer);
+        });
+    });
+}
+
+async function askAngularMigration(config: AngularUpdateConfig) {
     try {
         const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
         const currentAngularVersion = packageJson.dependencies['@angular/core']?.match(/(\d+)\./)?.[1];
@@ -31,70 +46,51 @@ function askAngularMigration(config: AngularUpdateConfig) {
             throw new Error("Angular version not found in package.json dependencies.");
         }
 
-        exec('npm outdated @angular/core --json', (err, stdout, stderr) => {
-            if (err || stderr) {
-                Output.error("Failed to check for outdated Angular version.");
-                return;
-            }
+        const versionRaw = await execPromise('npm view @angular/core version');
+        const versionString = (typeof versionRaw === 'string') ? versionRaw : ''
 
-            const outdatedData = JSON.parse(stdout || '{}');
-            const latestAngularVersion = outdatedData['@angular/core']?.latest?.match(/(\d+)\./)?.[1];
+        const latestAngularVersion = versionString.split('.')[0];
 
-            if (latestAngularVersion && parseInt(latestAngularVersion) > parseInt(currentAngularVersion)) {
-                const rl = readline.createInterface({
-                    input: process.stdin,
-                    output: process.stdout,
-                });
+        if (latestAngularVersion && parseInt(latestAngularVersion) > parseInt(currentAngularVersion)) {
+            const answer = await askQuestion(
+                `A new major version of Angular is available: ${latestAngularVersion}. Would you like to perform a migration (+1) major Version? (yes/no default): `
+            );
 
-                rl.question(
-                    `A new major version of Angular is available: ${latestAngularVersion}. Would you like to perform a migration (+1) major Version? (yes/no default): `,
-                    (answer) => {
-                        if (answer.toLowerCase() === 'yes' || answer.toLowerCase() === 'y') {
-                            Output.greenBoldUnderline(`Angular migrate to ${currentAngularVersion + 1}`);
-                            if (parseInt(currentAngularVersion) + 1 < parseInt(latestAngularVersion)) {
-                                Output.yellow("Repeat the migration to reach " + latestAngularVersion);
-                            }
-                            config.migrateAngularVersion = true;
-                        } else {
-                            Output.greenBoldUnderline("Staying on the current version.");
-                        }
-                        rl.close();
-                    }
-                );
+            if (answer.toLowerCase() === 'yes' || answer.toLowerCase() === 'y') {
+                Output.greenBoldUnderline(`Angular migrate to ${parseInt(currentAngularVersion) + 1}`);
+                if (parseInt(currentAngularVersion) + 1 < parseInt(latestAngularVersion)) {
+                    Output.yellow("Repeat the migration to reach " + latestAngularVersion);
+                }
+                config.migrateAngularVersion = true;
             } else {
-                Output.greenBoldUnderline("No major updates detected.");
+                Output.greenBoldUnderline("Staying on the current version.");
             }
-        });
+        } else {
+            Output.greenBoldUnderline("You are on the Latest Major Version");
+        }
     } catch (error: any) {
-        Output.error(error.message);
+        Output.error(`Command failed: ${error.message}`);
     }
 }
 
-function askRemoveVersioningSymbols(config: AngularUpdateConfig) {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
-
-    rl.question(
-        `Should VersioningSymbols (~ ^) be removed? (yes/no default): `,
-        (answer) => {
-            if (answer.toLowerCase() === 'yes' || answer.toLowerCase() === 'y') {
-                Output.greenBoldUnderline(`Versioning symbols will be removed.`);
-                config.removeVersioningSymbols = true;
-            } else {
-                Output.greenBoldUnderline("Versioning symbols will remain untouched.");
-            }
-            rl.close();
-        }
+async function askRemoveVersioningSymbols(config: AngularUpdateConfig) {
+    const answer = await askQuestion(
+        `Should VersioningSymbols (~ ^) be removed? (yes/no default): `
     );
+
+    if (answer.toLowerCase() === 'yes' || answer.toLowerCase() === 'y') {
+        Output.greenBoldUnderline(`Versioning symbols will be removed.`);
+        config.removeVersioningSymbols = true;
+    } else {
+        Output.greenBoldUnderline("Versioning symbols will remain untouched.");
+    }
 }
 
-function askIgnoreDependencies(config: AngularUpdateConfig) {
+async function askIgnoreDependencies(config: AngularUpdateConfig) {
     const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
     const dependencies = Object.keys(packageJson.dependencies || {});
 
-    selectItems(
+    await selectItems(
         "Select dependencies to ignore (Press space to select, enter to confirm): ",
         dependencies,
         (selectedDependencies) => {
@@ -104,11 +100,11 @@ function askIgnoreDependencies(config: AngularUpdateConfig) {
     );
 }
 
-function askIgnoreDevDependencies(config: AngularUpdateConfig) {
+async function askIgnoreDevDependencies(config: AngularUpdateConfig) {
     const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
     const devDependencies = Object.keys(packageJson.devDependencies || {});
 
-    selectItems(
+    await selectItems(
         "Select devDependencies to ignore (Press space to select, enter to confirm): ",
         devDependencies,
         (selectedDevDependencies) => {
@@ -118,65 +114,85 @@ function askIgnoreDevDependencies(config: AngularUpdateConfig) {
     );
 }
 
-function askAutoCommit(config: AngularUpdateConfig) {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
-
-    rl.question(
-        `Should auto-commit be enabled during the update? (yes/no default): `,
-        (answer) => {
-            if (answer.toLowerCase() === 'yes' || answer.toLowerCase() === 'y') {
-                Output.greenBoldUnderline("Auto-commit will be enabled.");
-                config.autoCommitDuringUpdate = true;
-            } else {
-                Output.greenBoldUnderline("Auto-commit will remain disabled.");
-            }
-            rl.close();
-        }
+async function askAutoCommit(config: AngularUpdateConfig) {
+    const answer = await askQuestion(
+        `Should auto-commit be enabled during the update? (yes/no default): `
     );
+
+    if (answer.toLowerCase() === 'yes' || answer.toLowerCase() === 'y') {
+        Output.greenBoldUnderline("Auto-commit will be enabled.");
+        config.autoCommitDuringUpdate = true;
+    } else {
+        Output.greenBoldUnderline("Auto-commit will remain disabled.");
+    }
 }
 
-function selectItems(prompt: string, items: string[], callback: (selectedItems: string[]) => void) {
-    const selectedItems = new Set<string>();
-    let currentIndex = 0;
-
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-
-    function displayItems() {
-        console.clear();
-        console.log(prompt);
-        items.forEach((item, index) => {
-            const prefix = selectedItems.has(item) ? "[x]" : "[ ]";
-            console.log(`${prefix} ${item}`);
-        });
-    }
-
-    function handleKeyPress(key: any) {
-        if (key.name === "space") {
-            const currentItem = items[currentIndex];
-            if (selectedItems.has(currentItem)) {
-                selectedItems.delete(currentItem);
+const execPromise = (command) => {
+    return new Promise((resolve, reject) => {
+        exec(command, (error, stdout, stderr) => {
+            if (error) {
+                reject(stderr || error.message);
             } else {
-                selectedItems.add(currentItem);
+                resolve(stdout);
             }
-            displayItems();
-        } else if (key.name === "return") {
-            rl.close();
-            callback(Array.from(selectedItems));
-        } else if (key.name === "up") {
-            currentIndex = (currentIndex - 1 + items.length) % items.length;
-            displayItems();
-        } else if (key.name === "down") {
-            currentIndex = (currentIndex + 1) % items.length;
-            displayItems();
-        }
-    }
+        });
+    });
+};
 
-    process.stdin.on("keypress", handleKeyPress);
-    displayItems();
+function selectItems(prompt: string, items: string[], callback: (selectedItems: string[]) => void): Promise<void> {
+    return new Promise((resolve) => {
+        const selectedItems = new Set<string>();
+        let currentIndex = 0;
+
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+
+        if (process.stdin.isTTY) {
+            process.stdin.setRawMode(true);
+        }
+
+        function displayItems() {
+            console.clear();
+            console.log(prompt);
+            items.forEach((item, index) => {
+                const prefix = selectedItems.has(item) ? "[x]" : "[ ]";
+                console.log(`${index === currentIndex ? ">" : " "} ${prefix} ${item}`);
+            });
+        }
+
+        function handleKeyPress(chunk: Buffer, key: any) {
+            if (key?.name === "space") {
+                const currentItem = items[currentIndex];
+                if (selectedItems.has(currentItem)) {
+                    selectedItems.delete(currentItem);
+                } else {
+                    selectedItems.add(currentItem);
+                }
+                displayItems();
+            } else if (key?.name === "return") {
+                process.stdin.setRawMode(false);
+                rl.close();
+                callback(Array.from(selectedItems));
+                resolve();
+            } else if (key?.name === "up") {
+                currentIndex = (currentIndex - 1 + items.length) % items.length;
+                displayItems();
+            } else if (key?.name === "down") {
+                currentIndex = (currentIndex + 1) % items.length;
+                displayItems();
+            }
+        }
+
+        process.stdin.on("data", handleKeyPress);
+        displayItems();
+
+        rl.on("close", () => {
+            process.stdin.removeListener("data", handleKeyPress);
+            if (process.stdin.isTTY) {
+                process.stdin.setRawMode(false);
+            }
+        });
+    });
 }
