@@ -2,7 +2,6 @@ import * as cp from "child_process";
 import * as fs from 'fs';
 import simpleGit from "simple-git";
 import { AngularUpdateConfig } from "./config/update-config";
-import AngularUpdateDefaultConfig from "./config/update-config.json";
 import { Output, OutputCustom } from "./console-output";
 import { PackageJson } from "./model/packagejson.model";
 import { TextEn } from "./model/text-en";
@@ -19,7 +18,7 @@ export function npxSync(args: string[]) {
 }
 
 export async function gitSync(packageName: string, config: AngularUpdateConfig) {
-  if(!config.autoCommitDuringUpdate){
+  if (!config.autoCommitDuringUpdate) {
     Output.yellow(TextEn.UP_GIT_SKIP);
     return;
   }
@@ -47,21 +46,22 @@ export function addOrUpdateConfigToPackageJson(packageJson: PackageJson, config:
   savePackageJson(packageJson);
 }
 
-export function loadConfig(packageJson: PackageJson): AngularUpdateConfig {
-  const config = loadConfigFile(packageJson);
-  if (config.keepAngularMajorVersion) {
-    config.ignoreDependencies = filterAngular(Object.keys(packageJson.dependencies), config.ignoreDependencies);
-    config.ignoreDevDependencies = filterAngular(Object.keys(packageJson.devDependencies), config.ignoreDevDependencies);
-  }
-  return config;
-}
+// export function loadConfig(packageJson: PackageJson): AngularUpdateConfig {
+//   const config = loadConfigFile(packageJson);
+//   if (config.migrateAngularVersion) {
+//     config.ignoreDependencies = filterAngular(Object.keys(packageJson.dependencies), config.ignoreDependencies);
+//     config.ignoreDevDependencies = filterAngular(Object.keys(packageJson.devDependencies), config.ignoreDevDependencies);
+//   }
+//   return config;
+// }
 
 export function loadConfigFile(packageJson: PackageJson): AngularUpdateConfig {
-  if(packageJson.updateThemAll){
-    return packageJson.updateThemAll;
-  }
-  else{
-    return AngularUpdateDefaultConfig  }
+
+  return packageJson.updateThemAll as AngularUpdateConfig;
+
+  // else {
+  //   return AngularUpdateDefaultConfig
+  // }
 }
 
 function filterAngular(depList: string[], ignoreList: string[]) {

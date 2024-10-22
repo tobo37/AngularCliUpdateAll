@@ -5,7 +5,7 @@ import { AngularUpdateConfig } from './config/update-config';
 import { Output, OutputCustom } from './console-output';
 import { PackageJson } from './model/packagejson.model';
 import { TextEn } from './model/text-en';
-import { filterDependancies, getAngularMayorVersion, gitSync, loadConfig, loadPackageJson, npmSync, npxSync } from "./utility";
+import { filterDependancies, getAngularMayorVersion, gitSync, loadPackageJson, npmSync, npxSync } from "./utility";
 
 
 
@@ -89,16 +89,16 @@ export function removeVersioningSymbols(filepath: string) {
  * Main function to update all packages.
 
  */
-export async function updateAll() {
+export async function updateAll(config: AngularUpdateConfig) {
 
   const packageJson = loadPackageJson();
-  const config = loadConfig(packageJson);
+  // const config = loadConfig(packageJson);
   packageJson.updateThemAll = config;
 
   const dependencies = filterDependancies(Object.keys(packageJson.dependencies), config.ignoreDependencies);
   const devDependencies = filterDependancies(Object.keys(packageJson.devDependencies), config.ignoreDevDependencies);
 
-  await updateAngular(config.keepAngularMajorVersion, packageJson);
+  await updateAngular(config.migrateAngularVersion, packageJson);
   try {
     await updatePackagesFast(dependencies, config);
   } catch {

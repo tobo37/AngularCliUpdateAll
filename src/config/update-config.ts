@@ -1,5 +1,5 @@
 export interface AngularUpdateConfig {
-    keepAngularMajorVersion: boolean;
+    migrateAngularVersion: boolean;
     ignoreDependencies: string[];
     ignoreDevDependencies: string[];
     removeVersioningSymbols: boolean;
