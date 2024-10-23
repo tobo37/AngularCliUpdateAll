@@ -42,7 +42,8 @@ async function askAngularMigration(config: AngularUpdateConfig) {
         const versionRaw = await execPromise('npm view @angular/core version');
         const versionString = typeof versionRaw === 'string' ? versionRaw : '';
         const latestAngularVersion = versionString.split('.')[0];
-
+        config.runtime.angularCurrentVersion = currentAngularVersion
+        config.runtime.angularTargetVersion = currentAngularVersion
         // Check if a new major version is available
         if (latestAngularVersion && parseInt(latestAngularVersion) > parseInt(currentAngularVersion)) {
             const answer = await askQuestion(
@@ -58,6 +59,8 @@ async function askAngularMigration(config: AngularUpdateConfig) {
                 }
 
                 config.migrateAngularVersion = true;
+                config.runtime.angularTargetVersion = nextVersion.toString()
+
             } else {
                 Output.greenBoldUnderline("✔️ Staying on the current version.");
             }

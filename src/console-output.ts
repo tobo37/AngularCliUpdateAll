@@ -45,7 +45,11 @@ export abstract class OutputCustom {
         Output.error(TextEn.UP_ERROR_NPM_AUDIT.replace("${error}", error.message));
     }
 
-    static addConfig(config: AngularUpdateConfig){
+    static addConfig(config: AngularUpdateConfig) {
         Output.greenBoldUnderline(TextEn.CLI_ADD_CONFIG.replace("${config}", JSON.stringify(config, null, 2)))
+    }
+
+    static updateingPackage(packageName: string, version: string) {
+        Output.simple(TextEn.UP_UPDATE_PACKAGE.replace("${packageName}", packageName).replace("${version}", version.replace('@', '')))
     }
 }
